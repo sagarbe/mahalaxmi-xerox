@@ -60,11 +60,18 @@ logoutBtn.addEventListener("click", async () => {
 
     alert("Logout button clicked");
 
-    const { error } = await supabaseClient.auth.signOut();
+    const { error } = await supabaseClient.auth.signOut({ scope: "local" });
 
     console.log(error);
 
+    if (error) {
+        alert(error.message);
+        return;
+    }
+
     window.location.href = "login.html";
+
+});
 
 });
 
