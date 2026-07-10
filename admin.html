@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+<div class="container">
+
+    <h1>🖨️ Admin Dashboard</h1>
+
+    <table>
+
+        <thead>
+
+            <tr>
+                <th>ID</th>
+                <th>File</th>
+                <th>Service</th>
+                <th>Print</th>
+                <th>Copies</th>
+                <th>Amount</th>
+                <th>Status</th>
+            </tr>
+
+        </thead>
+
+        <tbody id="ordersTable">
+
+        </tbody>
+
+    </table>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase.js"></script>
+<script src="admin.js"></script>
+
+</body>
+</html>
