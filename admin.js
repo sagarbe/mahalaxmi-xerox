@@ -11,7 +11,6 @@ async function checkLogin() {
     }
 
     loadOrders();
-
 }
 
 async function loadOrders() {
@@ -22,9 +21,11 @@ async function loadOrders() {
         .order("id", { ascending: false });
 
     if (error) {
-        console.log(error);
+        console.log("Load Error:", error);
         return;
     }
+
+    console.log("Orders:", data);
 
     table.innerHTML = "";
 
@@ -33,48 +34,29 @@ async function loadOrders() {
         table.innerHTML += `
         <tr>
             <td>${order.id}</td>
-
-            <td>
-                <a href="${order.file_url}" target="_blank">
-                    Open File
-                </a>
-            </td>
-
+            <td><a href="${order.file_url}" target="_blank">Open File</a></td>
             <td>${order.service}</td>
-
             <td>${order.print_type}</td>
-
             <td>${order.copies}</td>
-
             <td>₹${order.amount}</td>
-
             <td>${order.print_status}</td>
         </tr>
         `;
 
     });
-
 }
 
 logoutBtn.addEventListener("click", async () => {
 
-    alert("Logout button clicked");
-
-    const { error } = await supabaseClient.auth.signOut({ scope: "local" });
-
-    console.log(error);
+    const { error } = await supabaseClient.auth.signOut();
 
     if (error) {
+        console.log(error);
         alert(error.message);
         return;
     }
 
     window.location.href = "login.html";
-
-});
-
-});
-
 });
 
 checkLogin();
