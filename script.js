@@ -1,53 +1,58 @@
-const fileInput=document.getElementById("file");
+const printFileInput = document.getElementById("file");
 
-const fileName=document.getElementById("fileName");
+const fileNameDisplay = document.getElementById("fileName");
 
-const copies=document.getElementById("copies");
+const copiesInput = document.getElementById("copies");
 
-const radios=document.getElementsByName("print");
+const printRadios = document.getElementsByName("print");
 
-const total=document.getElementById("totalPrice");
+const totalDisplay = document.getElementById("totalPrice");
 
-const rate=document.getElementById("rate");
+const rateDisplay = document.getElementById("rate");
 
-const pages=document.getElementById("pages");
+const pagesDisplay = document.getElementById("pages");
 
-let pageCount=1;
+let pageCount = 1;
 
-fileInput.addEventListener("change",()=>{
 
-if(fileInput.files.length>0){
+printFileInput.addEventListener("change", () => {
 
-fileName.innerHTML=fileInput.files[0].name;
+    if (printFileInput.files.length > 0) {
 
-}
+        fileNameDisplay.innerHTML = printFileInput.files[0].name;
 
-});
-
-function calculate(){
-
-let price=5;
-
-if(radios[1].checked){
-
-price=10;
-
-}
-
-rate.innerHTML="₹"+price;
-
-let totalAmount=price*pageCount*parseInt(copies.value);
-
-total.innerHTML="₹"+totalAmount;
-
-}
-
-radios.forEach(r=>{
-
-r.addEventListener("change",calculate);
+    }
 
 });
 
-copies.addEventListener("input",calculate);
+
+function calculate() {
+
+    let price = 5;
+
+    if (printRadios[1].checked) {
+
+        price = 10;
+
+    }
+
+    rateDisplay.innerHTML = "₹" + price;
+
+    let totalAmount = price * pageCount * parseInt(copiesInput.value);
+
+    totalDisplay.innerHTML = "₹" + totalAmount;
+
+}
+
+
+printRadios.forEach(radio => {
+
+    radio.addEventListener("change", calculate);
+
+});
+
+
+copiesInput.addEventListener("input", calculate);
+
 
 calculate();
