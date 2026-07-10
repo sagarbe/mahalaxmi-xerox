@@ -1,7 +1,6 @@
 const SUPABASE_URL = "https://xtwffnvrykavuorvzpjj.supabase.co";
 
-const SUPABASE_KEY = "तुमची sb_publishable_... key येथे पेस्ट करा";
-
+const SUPABASE_KEY = sb_publishable_VWSP2NLytDqEkbJ2kUHTMQ_x_Xw2UD6
 const supabase = window.supabase.createClient(
   SUPABASE_URL,
   SUPABASE_KEY
