@@ -1,33 +1,49 @@
 const uploadFileInput = document.getElementById("file");
 const orderButton = document.getElementById("orderBtn");
 
+
 orderButton.addEventListener("click", async () => {
+
 
     const selectedFile = uploadFileInput.files[0];
 
+
     if (!selectedFile) {
+
         alert("Please select a file");
         return;
+
     }
+
 
     const newFileName = Date.now() + "_" + selectedFile.name;
 
-    const { data, error } = await supabase.storage
+
+    const { data, error } = await supabaseClient.storage
         .from("documents")
         .upload(newFileName, selectedFile);
 
+
     if (error) {
-        console.log(error);
-        alert("Upload failed");
+
+        console.log("Upload Error:", error);
+        alert("Upload Failed");
+
         return;
+
     }
 
-    const publicUrl =
-    "https://xtwffnvrykavuorvzpjj.supabase.co/storage/v1/object/public/documents/" + newFileName;
+
+    const { data: urlData } = supabaseClient.storage
+        .from("documents")
+        .getPublicUrl(newFileName);
+
+
+
+    console.log("File URL:", urlData.publicUrl);
 
 
     alert("File Uploaded Successfully");
 
-    console.log("File URL:", publicUrl);
 
 });
