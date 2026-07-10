@@ -2,6 +2,7 @@ const fileInput = document.getElementById("file");
 const orderBtn = document.getElementById("orderBtn");
 
 const copiesInput = document.getElementById("copies");
+
 const printOptions = document.getElementsByName("print");
 
 
@@ -15,25 +16,31 @@ orderBtn.addEventListener("click", async () => {
     }
 
 
-    let price = 5;
+    let printType = "Black & White";
+    let amount = 5;
+
 
     if(printOptions[1].checked){
-        price = 10;
+        printType = "Color";
+        amount = 10;
     }
 
 
     let copies = Number(copiesInput.value);
 
 
-    const fileName = Date.now() + "_" + file.name;
+    let totalAmount = amount * copies;
 
 
     // Upload File
 
-    const {data:uploadData, error:uploadError} =
-    await supabase.storage
+    const fileName = Date.now() + "_" + file.name;
+
+
+    const {error:uploadError} = await supabase.storage
     .from("documents")
     .upload(fileName,file);
+
 
 
     if(uploadError){
@@ -43,6 +50,7 @@ orderBtn.addEventListener("click", async () => {
         return;
 
     }
+
 
 
     const fileUrl =
@@ -61,12 +69,15 @@ orderBtn.addEventListener("click", async () => {
 
         file_url:fileUrl,
 
-        print_type:
-        printOptions[1].checked ? "Color" : "Black & White",
+        service:"Document Print",
+
+        print_type:printType,
 
         copies:copies,
 
-        amount:price*copies,
+        amount:totalAmount,
+
+        payment:"Pending",
 
         status:"Pending",
 
@@ -75,18 +86,19 @@ orderBtn.addEventListener("click", async () => {
     }]);
 
 
+
     if(error){
 
         console.log(error);
 
         alert("Order Save Failed");
 
-        return;
+    }
+    else{
+
+        alert("Order Placed Successfully");
 
     }
-
-
-    alert("Order Placed Successfully");
 
 
 });
