@@ -4,7 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mahalaxmi Xerox Centre & General Store</title>
+
 <link rel="stylesheet" href="style.css">
+
 </head>
 
 <body>
@@ -13,44 +15,89 @@
 
 <h1>🏪 Mahalaxmi Xerox Centre & General Store</h1>
 
-<h3>Online Print Service</h3>
+<p>Online Print Service</p>
 
-<label>Select Service</label>
+<hr>
+
+<label><b>Select Service</b></label>
 
 <select id="service">
-<option>Document Print</option>
-<option>Aadhaar Card Print</option>
-<option>PAN Card Print</option>
-<option>Passport Photo</option>
-<option>Photo Print</option>
+
+<option value="document">📄 Document Print</option>
+
+<option value="aadhaar">🪪 Aadhaar Card Print</option>
+
+<option value="pan">💳 PAN Card Print</option>
+
+<option value="passport">🖼 Passport Photo</option>
+
+<option value="photo">📸 Photo Print</option>
+
 </select>
 
 <br><br>
 
-<label>Upload File</label><br>
-<input type="file">
+<label><b>Upload Document</b></label>
+
+<input type="file" id="file">
 
 <br><br>
 
-<label>Print Type</label><br>
-
-<input type="radio" name="print" checked> Black & White (₹5/Page)
+<label><b>Print Type</b></label>
 
 <br>
 
-<input type="radio" name="print"> Color (₹10/Page)
+<label>
+
+<input type="radio" name="print" checked>
+
+Black & White (₹5/Page)
+
+</label>
+
+<br>
+
+<label>
+
+<input type="radio" name="print">
+
+Color (₹10/Page)
+
+</label>
 
 <br><br>
 
-<label>Copies</label><br>
+<label><b>Copies</b></label>
 
-<input type="number" id="copies" value="1" min="1">
+<input
+type="number"
+id="copies"
+value="1"
+min="1">
 
 <br><br>
 
-<button>Place Order</button>
+<h2>
+
+Total :
+
+<span id="totalPrice">
+
+₹5
+
+</span>
+
+</h2>
+
+<button>
+
+Place Order
+
+</button>
 
 </div>
+
+<script src="script.js"></script>
 
 </body>
 </html>
