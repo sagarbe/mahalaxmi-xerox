@@ -1,4 +1,3 @@
-const fileInput = document.getElementById("file");
 const orderBtn = document.getElementById("orderBtn");
 
 orderBtn.addEventListener("click", async () => {
@@ -10,11 +9,11 @@ orderBtn.addEventListener("click", async () => {
         return;
     }
 
-    const fileName = Date.now() + "_" + file.name;
+    const uploadFileName = Date.now() + "_" + file.name;
 
-    const { data, error } = await supabase.storage
+    const { data, error } = await supabaseClient.storage
         .from("documents")
-        .upload(fileName, file);
+        .upload(uploadFileName, file);
 
     if (error) {
         alert("File Upload Failed");
@@ -23,7 +22,7 @@ orderBtn.addEventListener("click", async () => {
     }
 
     const fileUrl =
-        "https://xtwffnvrykavuorvzpjj.supabase.co/storage/v1/object/public/documents/" + fileName;
+        "https://xtwffnvrykavuorvzpjj.supabase.co/storage/v1/object/public/documents/" + uploadFileName;
 
     alert("File Uploaded Successfully");
 
