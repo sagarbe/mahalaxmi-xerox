@@ -112,7 +112,8 @@ orderButton.addEventListener("click", async () => {
 
         }]);
 
-
+    console.log("ORDER DATA:", orderData);
+    console.log("ORDER ERROR:", orderError);
 
     if(orderError){
 
