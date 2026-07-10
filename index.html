@@ -1,99 +1,77 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mahalaxmi Xerox Centre & General Store</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mahalaxmi Xerox Centre & General Store</title>
 
-<link rel="stylesheet" href="style.css">
-
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
 <div class="container">
 
-<h1>🏪 Mahalaxmi Xerox Centre & General Store</h1>
+    <div class="logo">🖨️</div>
 
-<p>Online Print Service</p>
+    <h1>Mahalaxmi Xerox Centre & General Store</h1>
 
-<hr>
+    <p class="subtitle">
+        Upload your document and place your print order
+    </p>
 
-<label><b>Select Service</b></label>
+    <label><b>Select Service</b></label>
 
-<select id="service">
+    <select id="service">
 
-<option value="document">📄 Document Print</option>
+        <option value="document">📄 Document Print</option>
 
-<option value="aadhaar">🪪 Aadhaar Card Print</option>
+        <option value="aadhaar">🪪 Aadhaar Card Print</option>
 
-<option value="pan">💳 PAN Card Print</option>
+        <option value="pan">💳 PAN Card Print</option>
 
-<option value="passport">🖼 Passport Photo</option>
+        <option value="passport">📷 Passport Photo</option>
 
-<option value="photo">📸 Photo Print</option>
+        <option value="photo">🖼 Photo Print (4x6)</option>
 
-</select>
+    </select>
 
-<br><br>
+    <label><b>Upload Document</b></label>
 
-<label><b>Upload Document</b></label>
+    <input type="file" id="file">
 
-<input type="file" id="file">
+    <label><b>Print Type</b></label>
 
-<br><br>
+    <div class="radio">
+        <label>
+            <input type="radio" name="print" checked>
+            Black & White (₹5/Page)
+        </label>
+    </div>
 
-<label><b>Print Type</b></label>
+    <div class="radio">
+        <label>
+            <input type="radio" name="print">
+            Color (₹10/Page)
+        </label>
+    </div>
 
-<br>
+    <label><b>Number of Copies</b></label>
 
-<label>
+    <input
+        type="number"
+        id="copies"
+        value="1"
+        min="1">
 
-<input type="radio" name="print" checked>
+    <div class="total">
+        Total :
+        <span id="totalPrice">₹5</span>
+    </div>
 
-Black & White (₹5/Page)
-
-</label>
-
-<br>
-
-<label>
-
-<input type="radio" name="print">
-
-Color (₹10/Page)
-
-</label>
-
-<br><br>
-
-<label><b>Copies</b></label>
-
-<input
-type="number"
-id="copies"
-value="1"
-min="1">
-
-<br><br>
-
-<h2>
-
-Total :
-
-<span id="totalPrice">
-
-₹5
-
-</span>
-
-</h2>
-
-<button>
-
-Place Order
-
-</button>
+    <button id="orderBtn">
+        🖨️ Place Order
+    </button>
 
 </div>
 
