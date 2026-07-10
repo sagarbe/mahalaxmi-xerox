@@ -83,3 +83,34 @@ cursor:pointer;
 button:hover{
 background:#084298;
 }
+.file-info{
+
+margin-top:20px;
+
+padding:15px;
+
+background:#f8f9fa;
+
+border-radius:10px;
+
+}
+
+.summary{
+
+margin-top:15px;
+
+padding:10px;
+
+background:#eef5ff;
+
+border-radius:10px;
+
+}
+
+.summary p{
+
+margin:8px 0;
+
+font-size:17px;
+
+}
