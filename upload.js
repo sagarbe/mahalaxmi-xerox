@@ -83,7 +83,7 @@ orderButton.addEventListener("click", async () => {
 
     // Save Order In Database
 
-
+    console.log("Trying to save order...");
     const { data: orderData, error: orderError } =
         await supabaseClient
         .from("orders")
