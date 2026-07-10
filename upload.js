@@ -1,104 +1,33 @@
-const fileInput = document.getElementById("file");
-const orderBtn = document.getElementById("orderBtn");
+const uploadFileInput = document.getElementById("file");
+const orderButton = document.getElementById("orderBtn");
 
-const copiesInput = document.getElementById("copies");
+orderButton.addEventListener("click", async () => {
 
-const printOptions = document.getElementsByName("print");
+    const selectedFile = uploadFileInput.files[0];
 
-
-orderBtn.addEventListener("click", async () => {
-
-    const file = fileInput.files[0];
-
-    if (!file) {
-        alert("Please select file");
+    if (!selectedFile) {
+        alert("Please select a file");
         return;
     }
 
+    const newFileName = Date.now() + "_" + selectedFile.name;
 
-    let printType = "Black & White";
-    let amount = 5;
+    const { data, error } = await supabase.storage
+        .from("documents")
+        .upload(newFileName, selectedFile);
 
-
-    if(printOptions[1].checked){
-        printType = "Color";
-        amount = 10;
-    }
-
-
-    let copies = Number(copiesInput.value);
-
-
-    let totalAmount = amount * copies;
-
-
-    // Upload File
-
-    const fileName = Date.now() + "_" + file.name;
-
-
-    const {error:uploadError} = await supabase.storage
-    .from("documents")
-    .upload(fileName,file);
-
-
-
-    if(uploadError){
-
-        alert("Upload Failed");
-        console.log(uploadError);
-        return;
-
-    }
-
-
-
-    const fileUrl =
-    "https://xtwffnvrykavuorvzpjj.supabase.co/storage/v1/object/public/documents/"
-    + fileName;
-
-
-
-    // Save Order
-
-    const {data,error} = await supabase
-    .from("orders")
-    .insert([{
-
-        file_name:file.name,
-
-        file_url:fileUrl,
-
-        service:"Document Print",
-
-        print_type:printType,
-
-        copies:copies,
-
-        amount:totalAmount,
-
-        payment:"Pending",
-
-        status:"Pending",
-
-        print_status:"Pending"
-
-    }]);
-
-
-
-    if(error){
-
+    if (error) {
         console.log(error);
-
-        alert("Order Save Failed");
-
-    }
-    else{
-
-        alert("Order Placed Successfully");
-
+        alert("Upload failed");
+        return;
     }
 
+    const publicUrl =
+    "https://xtwffnvrykavuorvzpjj.supabase.co/storage/v1/object/public/documents/" + newFileName;
+
+
+    alert("File Uploaded Successfully");
+
+    console.log("File URL:", publicUrl);
 
 });
