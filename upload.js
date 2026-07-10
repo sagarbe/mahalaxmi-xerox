@@ -1,10 +1,14 @@
-const uploadFileInput = document.getElementById("file");
 const orderButton = document.getElementById("orderBtn");
-const serviceSelect = document.getElementById("service");
 
 orderButton.addEventListener("click", async () => {
 
-    const selectedFile = uploadFileInput.files[0];
+    const fileInput = document.getElementById("file");
+    const serviceSelect = document.getElementById("service");
+    const copiesInput = document.getElementById("copies");
+    const totalDisplay = document.getElementById("totalPrice");
+    const printRadios = document.getElementsByName("print");
+
+    const selectedFile = fileInput.files[0];
 
     if (!selectedFile) {
         alert("Please select a file");
@@ -38,13 +42,9 @@ orderButton.addEventListener("click", async () => {
         printType = "Color";
     }
 
-    // Copies
-    const copies = parseInt(copiesInput.value);
-
-    // Total Amount
-    const amount = parseInt(
-        totalDisplay.innerText.replace("₹", "")
-    );
+    // Copies & Amount
+    const copies = parseInt(copiesInput.value) || 1;
+    const amount = parseInt(totalDisplay.innerText.replace("₹", ""));
 
     // Save Order
     const { error: orderError } = await supabaseClient
@@ -59,20 +59,18 @@ orderButton.addEventListener("click", async () => {
                 amount: amount,
                 payment: "Pending",
                 status: "New",
-                page_count: pageCount,
+                page_count: 1,
                 print_status: "Pending"
             }
         ]);
 
     if (orderError) {
-        console.log(orderError);
+        console.log("Database Error:", orderError);
         alert("Order Save Failed");
         return;
     }
 
-    alert("Order Placed Successfully");
+    alert("Order Placed Successfully!");
 
-    console.log("Order Saved");
-    console.log(fileURL);
-
+    console.log("Order Saved Successfully");
 });
