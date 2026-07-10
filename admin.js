@@ -58,9 +58,15 @@ async function loadOrders() {
 
 logoutBtn.addEventListener("click", async () => {
 
-    await supabaseClient.auth.signOut();
+    alert("Logout button clicked");
+
+    const { error } = await supabaseClient.auth.signOut();
+
+    console.log(error);
 
     window.location.href = "login.html";
+
+});
 
 });
 
