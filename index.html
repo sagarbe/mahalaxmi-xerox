@@ -6,34 +6,51 @@
 <title>Mahalaxmi Xerox Centre & General Store</title>
 <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-<h1>Mahalaxmi Xerox Centre & General Store</h1>
+<div class="container">
 
+<h1>🏪 Mahalaxmi Xerox Centre & General Store</h1>
+
+<h3>Online Print Service</h3>
+
+<label>Select Service</label>
+
+<select id="service">
+<option>Document Print</option>
+<option>Aadhaar Card Print</option>
+<option>PAN Card Print</option>
+<option>Passport Photo</option>
+<option>Photo Print</option>
+</select>
+
+<br><br>
+
+<label>Upload File</label><br>
 <input type="file">
 
 <br><br>
 
-<label>
-<input type="radio" name="print" value="bw" checked>
-Black & White (₹5/Page)
-</label>
+<label>Print Type</label><br>
+
+<input type="radio" name="print" checked> Black & White (₹5/Page)
 
 <br>
 
-<label>
-<input type="radio" name="print" value="color">
-Color (₹10/Page)
-</label>
+<input type="radio" name="print"> Color (₹10/Page)
 
 <br><br>
 
-<label>Copies</label>
+<label>Copies</label><br>
+
 <input type="number" value="1" min="1">
 
 <br><br>
 
 <button>Place Order</button>
+
+</div>
 
 </body>
 </html>
