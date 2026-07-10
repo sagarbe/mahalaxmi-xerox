@@ -1,29 +1,37 @@
-const { data } = await supabaseClient.auth.getSession();
-
-if (!data.session) {
-    window.location.href = "login.html";
-}
 const table = document.getElementById("ordersTable");
+const logoutBtn = document.getElementById("logoutBtn");
 
-async function loadOrders(){
+async function checkLogin() {
+
+    const { data } = await supabaseClient.auth.getSession();
+
+    if (!data.session) {
+        window.location.href = "login.html";
+        return;
+    }
+
+    loadOrders();
+
+}
+
+async function loadOrders() {
 
     const { data, error } = await supabaseClient
         .from("orders")
         .select("*")
-        .order("id", { ascending:false });
+        .order("id", { ascending: false });
 
-    if(error){
+    if (error) {
         console.log(error);
         return;
     }
 
     table.innerHTML = "";
 
-    data.forEach(order=>{
+    data.forEach(order => {
 
         table.innerHTML += `
         <tr>
-
             <td>${order.id}</td>
 
             <td>
@@ -41,7 +49,6 @@ async function loadOrders(){
             <td>₹${order.amount}</td>
 
             <td>${order.print_status}</td>
-
         </tr>
         `;
 
@@ -49,4 +56,12 @@ async function loadOrders(){
 
 }
 
-loadOrders();
+logoutBtn.addEventListener("click", async () => {
+
+    await supabaseClient.auth.signOut();
+
+    window.location.href = "login.html";
+
+});
+
+checkLogin();
