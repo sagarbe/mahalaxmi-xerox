@@ -1,11 +1,7 @@
 const uploadFileInput = document.getElementById("file");
 const orderButton = document.getElementById("orderBtn");
 
-const serviceInput = document.getElementById("service");
-const copiesInput = document.getElementById("copies");
-
-const printRadios = document.getElementsByName("print");
-const totalDisplay = document.getElementById("totalPrice");
+const serviceSelect = document.getElementById("service");
 
 
 orderButton.addEventListener("click", async () => {
