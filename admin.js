@@ -8,96 +8,198 @@ const pendingOrders = document.getElementById("pendingOrders");
 const printedOrders = document.getElementById("printedOrders");
 const totalIncome = document.getElementById("totalIncome");
 
+
 let allOrders = [];
 
-async function checkLogin() {
 
-    const { data } = await supabaseClient.auth.getSession();
+// LOGIN CHECK
 
-    if (!data.session) {
-        window.location.href = "login.html";
+async function checkLogin(){
+
+    const {data} =
+    await supabaseClient.auth.getSession();
+
+
+    if(!data.session){
+
+        window.location.href="login.html";
         return;
+
     }
+
 
     loadOrders();
+
 }
 
-async function loadOrders() {
 
-    const { data, error } = await supabaseClient
-        .from("orders")
-        .select("*")
-        .order("id", { ascending: false });
 
-    if (error) {
+// LOAD ORDERS
+
+async function loadOrders(){
+
+
+    const {data,error}=await supabaseClient
+    .from("orders")
+    .select("*")
+    .order("id",{ascending:false});
+
+
+
+    if(error){
+
         console.log(error);
         return;
+
     }
 
-    allOrders = data;
+
+
+    allOrders=data;
+
 
     updateDashboard();
 
     displayOrders(allOrders);
+
+
 }
 
-function updateDashboard() {
 
-    totalOrders.innerText = allOrders.length;
+
+// DASHBOARD
+
+function updateDashboard(){
+
+
+    totalOrders.innerText =
+    allOrders.length;
+
+
 
     pendingOrders.innerText =
-        allOrders.filter(o => o.print_status === "Pending").length;
+    allOrders.filter(
+        o=>o.print_status==="Pending"
+    ).length;
+
+
 
     printedOrders.innerText =
-        allOrders.filter(o => o.print_status === "Printed").length;
+    allOrders.filter(
+        o=>o.print_status==="Printed"
+    ).length;
 
-    let income = 0;
 
-    allOrders.forEach(order => {
+
+    let income=0;
+
+
+    allOrders.forEach(order=>{
 
         income += order.amount || 0;
 
     });
 
-    totalIncome.innerText = "₹" + income;
+
+
+    totalIncome.innerText="₹"+income;
+
 
 }
 
-function displayOrders(list) {
 
-    table.innerHTML = "";
 
-    list.forEach(order => {
+// DISPLAY
 
-        table.innerHTML += `
+function displayOrders(list){
+
+
+table.innerHTML="";
+
+
+
+list.forEach(order=>{
+
+
+let paymentButton="";
+
+
+
+if(order.payment==="Pending"){
+
+
+paymentButton=`
+
+<br>
+
+<button onclick="approveCash(${order.id})">
+💵 Cash Approve
+</button>
+
+
+<button onclick="approveUPI(${order.id})">
+📱 UPI Approve
+</button>
+
+`;
+
+
+
+}
+
+
+
+table.innerHTML+=`
 
 <tr>
 
 <td>${order.id}</td>
 
+
 <td>
 
 <a href="${order.file_url}" target="_blank">
-
 📄 View
-
 </a>
 
 </td>
 
+
 <td>${order.service}</td>
+
 
 <td>${order.print_type}</td>
 
+
 <td>${order.page_count ?? "-"}</td>
+
 
 <td>${order.copies}</td>
 
+
 <td>₹${order.amount}</td>
 
-<td>${order.print_status}</td>
 
 <td>
+
+Payment:
+<b>${order.payment}</b>
+
+<br>
+
+Print:
+<b>${order.print_status}</b>
+
+
+</td>
+
+
+
+<td>
+
+
+${paymentButton}
+
 
 <button onclick="printOrder(${order.id})">
 
@@ -105,111 +207,263 @@ function displayOrders(list) {
 
 </button>
 
+
+
 </td>
+
 
 </tr>
 
+
 `;
 
-    });
+
+
+});
+
 
 }
 
-searchBox.addEventListener("keyup", () => {
 
-    const value = searchBox.value.toLowerCase();
 
-    const filtered = allOrders.filter(order =>
+// SEARCH
 
-        (order.file_name || "")
-        .toLowerCase()
-        .includes(value)
+searchBox.addEventListener(
+"keyup",
+()=>{
 
-    );
 
-    displayOrders(filtered);
+const value=
+searchBox.value.toLowerCase();
+
+
+
+const filtered =
+allOrders.filter(order=>
+
+(order.file_name || "")
+.toLowerCase()
+.includes(value)
+
+);
+
+
+
+displayOrders(filtered);
+
 
 });
 
-refreshBtn.addEventListener("click", loadOrders);
 
-logoutBtn.addEventListener("click", async () => {
 
-    await supabaseClient.auth.signOut();
 
-    window.location.href = "login.html";
+
+// CASH APPROVE
+
+async function approveCash(id){
+
+
+const ok =
+confirm(
+"Cash received?"
+);
+
+
+
+if(!ok)return;
+
+
+
+const {error}=await supabaseClient
+.from("orders")
+.update({
+
+payment:"Cash"
+
+})
+.eq("id",id);
+
+
+
+if(error){
+
+alert(error.message);
+return;
+
+}
+
+
+
+alert(
+"💵 Cash Approved"
+);
+
+
+
+loadOrders();
+
+
+}
+
+
+
+
+
+// UPI APPROVE
+
+async function approveUPI(id){
+
+
+const ok =
+confirm(
+"UPI Payment Received?"
+);
+
+
+
+if(!ok)return;
+
+
+
+const {error}=await supabaseClient
+.from("orders")
+.update({
+
+payment:"Paid"
+
+})
+.eq("id",id);
+
+
+
+if(error){
+
+alert(error.message);
+return;
+
+}
+
+
+
+alert(
+"📱 UPI Approved"
+);
+
+
+
+loadOrders();
+
+
+}
+
+
+
+
+
+// MANUAL PRINT
+
+async function printOrder(id){
+
+
+const ok =
+confirm(
+"Print this order?"
+);
+
+
+
+if(!ok)return;
+
+
+
+await supabaseClient
+.from("orders")
+.update({
+
+print_status:"Printing"
+
+})
+.eq("id",id);
+
+
+
+loadOrders();
+
+
+
+setTimeout(async()=>{
+
+
+await supabaseClient
+.from("orders")
+.update({
+
+print_status:"Printed"
+
+})
+.eq("id",id);
+
+
+
+loadOrders();
+
+
+
+},3000);
+
+
+
+}
+
+
+
+
+
+
+refreshBtn.addEventListener(
+"click",
+loadOrders
+);
+
+
+
+logoutBtn.addEventListener(
+"click",
+async()=>{
+
+
+await supabaseClient.auth.signOut();
+
+
+window.location.href="login.html";
+
 
 });
+
+
+
+
+
+// START
 
 checkLogin();
-// =========================
-// PRINT ORDER
-// =========================
-
-async function printOrder(id) {
-
-    const ok = confirm("Print this order?");
-
-    if (!ok) return;
-
-    // Status = Printing
-
-    const { error } = await supabaseClient
-        .from("orders")
-        .update({
-            print_status: "Printing"
-        })
-        .eq("id", id);
-
-    if (error) {
-        alert(error.message);
-        return;
-    }
-
-    loadOrders();
-
-    // PDF Open
-
-    const order = allOrders.find(o => o.id === id);
-
-    if (order) {
-        window.open(order.file_url, "_blank");
-    }
-
-    // 3 sec नंतर Printed
-
-    setTimeout(async () => {
-
-        await supabaseClient
-            .from("orders")
-            .update({
-                print_status: "Printed"
-            })
-            .eq("id", id);
-
-        loadOrders();
-
-    }, 3000);
-
-}
 
 
 
-// =========================
-// AUTO REFRESH EVERY 5 SEC
-// =========================
 
-setInterval(() => {
+// AUTO REFRESH
 
-    loadOrders();
+setInterval(()=>{
 
-}, 5000);
+loadOrders();
 
+},5000);
 
 
-// =========================
+
+
+
 // REALTIME
-// =========================
 
 supabaseClient
 .channel("orders-channel")
@@ -217,15 +471,15 @@ supabaseClient
 .on(
 "postgres_changes",
 {
-event: "*",
-schema: "public",
-table: "orders"
+event:"*",
+schema:"public",
+table:"orders"
 },
-() => {
+()=>{
 
 loadOrders();
 
 }
-)
 
+)
 .subscribe();
