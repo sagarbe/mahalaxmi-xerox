@@ -1,112 +1,113 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mahalaxmi Xerox Admin</title>
 
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Admin Dashboard</title>
-
-<link rel="stylesheet" href="style.css">
-
+    <link rel="stylesheet" href="admin.css">
 </head>
 
 <body>
 
 <div class="container">
 
-<h1>🖨 Mahalaxmi Xerox Admin</h1>
+    <header class="header">
 
-<div class="top-bar">
+        <div>
+            <h1>🖨 Mahalaxmi Xerox Admin</h1>
+            <p>Manage Orders & Printing</p>
+        </div>
 
-<button id="refreshBtn">
-🔄 Refresh
-</button>
+        <div class="header-buttons">
 
-<button id="logoutBtn">
-🚪 Logout
-</button>
+            <button id="refreshBtn">
+                🔄 Refresh
+            </button>
 
-</div>
+            <button id="logoutBtn">
+                🚪 Logout
+            </button>
 
-<div class="dashboard">
+        </div>
 
-<div class="card">
+    </header>
 
-<h3>Total Orders</h3>
 
-<h2 id="totalOrders">0</h2>
+    <section class="dashboard">
 
-</div>
+        <div class="card">
+            <h3>Total Orders</h3>
+            <h2 id="totalOrders">0</h2>
+        </div>
 
-<div class="card">
+        <div class="card">
+            <h3>Pending</h3>
+            <h2 id="pendingOrders">0</h2>
+        </div>
 
-<h3>Pending</h3>
+        <div class="card">
+            <h3>Printed</h3>
+            <h2 id="printedOrders">0</h2>
+        </div>
 
-<h2 id="pendingOrders">0</h2>
+        <div class="card">
+            <h3>Total Income</h3>
+            <h2 id="totalIncome">₹0</h2>
+        </div>
 
-</div>
+    </section>
 
-<div class="card">
 
-<h3>Printed</h3>
+    <div class="search-box">
 
-<h2 id="printedOrders">0</h2>
+        <input
+            type="text"
+            id="searchBox"
+            placeholder="🔍 Search File Name">
 
-</div>
+    </div>
 
-<div class="card">
 
-<h3>Total Income</h3>
+    <div class="table-container">
 
-<h2 id="totalIncome">₹0</h2>
+        <table>
 
-</div>
+            <thead>
 
-</div>
+                <tr>
 
-<input
-type="text"
-id="searchBox"
-placeholder="Search File..."
->
+                    <th>ID</th>
 
-<br><br>
+                    <th>File</th>
 
-<table>
+                    <th>Service</th>
 
-<thead>
+                    <th>Print Type</th>
 
-<tr>
+                    <th>Pages</th>
 
-<th>ID</th>
+                    <th>Copies</th>
 
-<th>File</th>
+                    <th>Amount</th>
 
-<th>Service</th>
+                    <th>Status</th>
 
-<th>Print</th>
+                    <th>Action</th>
 
-<th>Pages</th>
+                </tr>
 
-<th>Copies</th>
+            </thead>
 
-<th>Amount</th>
+            <tbody id="ordersTable">
 
-<th>Status</th>
+            </tbody>
 
-<th>Action</th>
+        </table>
 
-</tr>
-
-</thead>
-
-<tbody id="ordersTable">
-
-</tbody>
-
-</table>
+    </div>
 
 </div>
 
@@ -119,3 +120,4 @@ placeholder="Search File..."
 </body>
 
 </html>
+```

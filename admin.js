@@ -10,352 +10,221 @@ const totalIncome = document.getElementById("totalIncome");
 
 let allOrders = [];
 
-
 // LOGIN
+async function checkLogin() {
 
-async function checkLogin(){
+    const { data } = await supabaseClient.auth.getSession();
 
-    const {data} = await supabaseClient.auth.getSession();
-
-    if(!data.session){
-        window.location.href="login.html";
+    if (!data.session) {
+        window.location.href = "login.html";
         return;
     }
 
     loadOrders();
-
 }
 
-
-
 // LOAD ORDERS
+async function loadOrders() {
 
-async function loadOrders(){
+    const { data: orders, error } = await supabaseClient
+        .from("orders")
+        .select("*")
+        .order("id", { ascending: false });
 
-    const {data: orders, error} = await supabaseClient
-    .from("orders")
-    .select("*")
-    .order("id",{ascending:false});
-
-
-    console.log("Orders:",orders);
-    console.log("Error:",error);
-
-
-    if(error){
+    if (error) {
         alert(error.message);
         return;
     }
-
 
     allOrders = orders || [];
 
     updateDashboard();
     displayOrders(allOrders);
-
 }
 
-
-
 // DASHBOARD
+function updateDashboard() {
 
-function updateDashboard(){
-
-    if(totalOrders)
     totalOrders.innerText = allOrders.length;
 
-
-    if(pendingOrders)
     pendingOrders.innerText =
-    allOrders.filter(
-        o=>o.print_status==="Pending"
-    ).length;
+        allOrders.filter(o => o.print_status === "Pending").length;
 
-
-    if(printedOrders)
     printedOrders.innerText =
-    allOrders.filter(
-        o=>o.print_status==="Printed"
-    ).length;
-
+        allOrders.filter(o => o.print_status === "Printed").length;
 
     let income = 0;
 
-
-    allOrders.forEach(order=>{
+    allOrders.forEach(order => {
         income += Number(order.amount || 0);
     });
 
-
-    if(totalIncome)
-    totalIncome.innerText="₹"+income;
-
+    totalIncome.innerText = "₹" + income;
 }
-
-
 
 // DISPLAY
+function displayOrders(list) {
 
-function displayOrders(list){
+    table.innerHTML = "";
 
-    if(!table) return;
+    list.forEach(order => {
 
+        let paymentButtons = "";
 
-    table.innerHTML="";
+        if (order.payment === "Pending") {
 
+            paymentButtons = `
+                <button class="cash" onclick="approveCash(${order.id})">
+                    💵 Cash Approve
+                </button>
 
-    list.forEach(order=>{
-
-
-        let paymentButton="";
-
-
-        if(order.payment==="Pending"){
-
-            paymentButton=`
-
-            <button onclick="approveCash(${order.id})">
-            💵 Cash Approve
-            </button>
-
-            <button onclick="approveUPI(${order.id})">
-            📱 UPI Approve
-            </button>
-
+                <button class="upi" onclick="approveUPI(${order.id})">
+                    📱 UPI Approve
+                </button>
             `;
-
         }
 
+        let badgeClass = "pending";
 
+        if (order.print_status === "Printed")
+            badgeClass = "printed";
+
+        else if (order.print_status === "Printing")
+            badgeClass = "printing";
+
+        else if (order.print_status === "Failed")
+            badgeClass = "failed";
 
         table.innerHTML += `
-
         <tr>
 
-        <td>${order.id}</td>
+            <td>${order.id}</td>
 
-        <td>
-        <a href="${order.file_url}" target="_blank">
-        📄 View
-        </a>
-        </td>
+            <td>
+                <a href="${order.file_url}" target="_blank">
+                    📄 View
+                </a>
+            </td>
 
-        <td>${order.service}</td>
+            <td>${order.service}</td>
 
-        <td>${order.print_type}</td>
+            <td>${order.print_type}</td>
 
-        <td>${order.page_count ?? "-"}</td>
+            <td>${order.page_count ?? "-"}</td>
 
-        <td>${order.copies}</td>
+            <td>${order.copies}</td>
 
-        <td>₹${order.amount}</td>
+            <td>₹${order.amount}</td>
 
-        <td>
-        Payment:
-        <b>${order.payment}</b>
-        <br>
-        Print:
-        <b>${order.print_status}</b>
-        </td>
+            <td>
 
-        <td>
+                <b>${order.payment}</b>
 
-        ${paymentButton}
+                <br><br>
 
-        <button onclick="printOrder(${order.id})">
-        🖨 Print
-        </button>
+                <span class="${badgeClass}">
+                    ${order.print_status}
+                </span>
 
-        </td>
+            </td>
+
+            <td>
+
+                ${paymentButtons}
+
+            </td>
 
         </tr>
-
         `;
-
-
     });
-
-
 }
-
-
 
 // SEARCH
+searchBox.addEventListener("keyup", () => {
 
-if(searchBox){
+    const value = searchBox.value.toLowerCase();
 
-searchBox.addEventListener("keyup",()=>{
-
-
-    let value = searchBox.value.toLowerCase();
-
-
-    let filtered = allOrders.filter(order=>
-
+    const filtered = allOrders.filter(order =>
         (order.file_name || "")
-        .toLowerCase()
-        .includes(value)
-
+            .toLowerCase()
+            .includes(value)
     );
 
-
     displayOrders(filtered);
-
-
 });
 
-}
+// CASH APPROVE
+async function approveCash(id) {
 
+    if (!confirm("Cash payment received?")) return;
 
+    const { error } = await supabaseClient
+        .from("orders")
+        .update({
+            payment: "Cash"
+        })
+        .eq("id", id);
 
-// CASH
-
-async function approveCash(id){
-
-    if(!confirm("Cash received?"))
-    return;
-
-
-    const {error}=await supabaseClient
-    .from("orders")
-    .update({
-        payment:"Cash"
-    })
-    .eq("id",id);
-
-
-
-    if(error){
+    if (error) {
         alert(error.message);
         return;
     }
-
 
     alert("Cash Approved");
 
     loadOrders();
-
 }
 
+// UPI APPROVE
+async function approveUPI(id) {
 
+    if (!confirm("UPI payment received?")) return;
 
-// UPI
+    const { error } = await supabaseClient
+        .from("orders")
+        .update({
+            payment: "Paid"
+        })
+        .eq("id", id);
 
-async function approveUPI(id){
-
-    if(!confirm("UPI Payment Received?"))
-    return;
-
-
-    const {error}=await supabaseClient
-    .from("orders")
-    .update({
-        payment:"Paid"
-    })
-    .eq("id",id);
-
-
-
-    if(error){
+    if (error) {
         alert(error.message);
         return;
     }
 
-
     alert("UPI Approved");
 
     loadOrders();
-
 }
-
-
-
-// PRINT
-
-async function printOrder(id){
-
-    if(!confirm("Print this order?"))
-    return;
-
-
-    await supabaseClient
-    .from("orders")
-    .update({
-        print_status:"Printing"
-    })
-    .eq("id",id);
-
-
-
-    setTimeout(async()=>{
-
-
-        await supabaseClient
-        .from("orders")
-        .update({
-            print_status:"Printed"
-        })
-        .eq("id",id);
-
-
-        loadOrders();
-
-
-    },3000);
-
-
-}
-
-
 
 // BUTTONS
+refreshBtn.onclick = loadOrders;
 
-if(refreshBtn){
-
-refreshBtn.onclick=loadOrders;
-
-}
-
-
-if(logoutBtn){
-
-logoutBtn.onclick=async()=>{
+logoutBtn.onclick = async () => {
 
     await supabaseClient.auth.signOut();
 
-    window.location.href="login.html";
-
+    window.location.href = "login.html";
 };
 
-}
-
-
-
 // START
-
 checkLogin();
 
-
-
 // AUTO REFRESH
-
-setInterval(loadOrders,5000);
-
-
+setInterval(loadOrders, 5000);
 
 // REALTIME
-
 supabaseClient
 .channel("orders-channel")
 .on(
-"postgres_changes",
-{
-event:"*",
-schema:"public",
-table:"orders"
-},
-()=>{
-    loadOrders();
-}
+    "postgres_changes",
+    {
+        event: "*",
+        schema: "public",
+        table: "orders"
+    },
+    () => {
+        loadOrders();
+    }
 )
 .subscribe();
