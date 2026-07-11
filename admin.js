@@ -333,17 +333,48 @@ async function approveUPI(id) {
 
 async function reprint(id) {
 
+
     if (!confirm("Reprint this order?"))
         return;
 
+
+
+    const { data, error } =
     await supabaseClient
-        .from("orders")
-        .update({
-            print_status: "Pending"
-        })
-        .eq("id", id);
+    .from("orders")
+    .select("file_url")
+    .eq("id", id)
+    .single();
+
+
+
+    if(error){
+
+        alert(error.message);
+
+        return;
+
+    }
+
+
+
+    printOrder(data.file_url);
+
+
+
+    await supabaseClient
+    .from("orders")
+    .update({
+
+        print_status:"Pending"
+
+    })
+    .eq("id", id);
+
+
 
     loadOrders();
+
 
 }
 
