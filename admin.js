@@ -177,13 +177,20 @@ function displayOrders(list) {
         }
         else {
 
-            actionButtons = `
-                <button class="print" onclick="reprint(${order.id})">
-                    🖨 Reprint
-                </button>
-            `;
+    actionButtons = `
 
-        }
+        <button class="print" onclick="printOrder('${order.file_url}')">
+            🖨 Print
+        </button>
+
+
+        <button class="print" onclick="reprint(${order.id})">
+            🔄 Reprint
+        </button>
+
+    `;
+
+}
 
         let badge = "";
 
@@ -377,3 +384,41 @@ supabaseClient
     }
 )
 .subscribe();
+
+// ================= PRINT ORDER =================
+
+function printOrder(url){
+
+
+    const win = window.open(
+        url,
+        "_blank"
+    );
+
+
+    if(!win){
+
+        alert("Please allow popup");
+
+        return;
+
+    }
+
+
+
+    win.onload = function(){
+
+
+        setTimeout(function(){
+
+
+            win.print();
+
+
+        },500);
+
+
+    };
+
+
+}

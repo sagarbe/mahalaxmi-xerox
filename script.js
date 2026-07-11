@@ -8,6 +8,8 @@ const totalDisplay = document.getElementById("totalPrice");
 const rateDisplay = document.getElementById("rate");
 const pagesDisplay = document.getElementById("pages");
 
+const previewImage = document.getElementById("previewImage");
+
 
 let pageCount = 1;
 
@@ -65,18 +67,52 @@ async function loadPrices() {
 printFileInput.addEventListener("change", () => {
 
 
-    if(printFileInput.files.length > 0){
+    const file = printFileInput.files[0];
 
-        fileNameDisplay.innerText =
-        printFileInput.files[0].name;
+
+    if(file){
+
+
+        fileNameDisplay.innerText = file.name;
+
+
+
+        // Aadhaar / PAN Image Preview
+
+        if(file.type.startsWith("image/")){
+
+
+            const reader = new FileReader();
+
+
+            reader.onload = function(e){
+
+
+                previewImage.src = e.target.result;
+
+
+            };
+
+
+            reader.readAsDataURL(file);
+
+
+        }
+
 
     }
     else{
 
+
         fileNameDisplay.innerText =
         "No file selected";
 
+
+        previewImage.src = "";
+
+
     }
+
 
 
     pagesDisplay.innerText = pageCount;
@@ -176,7 +212,6 @@ supabaseClient
             "LIVE PRICE UPDATE:",
             payload.new
         );
-
 
 
         bwPrice =

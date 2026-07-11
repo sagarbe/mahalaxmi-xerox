@@ -13,43 +13,77 @@
 </head>
 
 
-
 <body>
+
 
 <div class="container">
 
+
     <div class="logo">🖨️</div>
 
-    <h1>Mahalaxmi Xerox Centre & General Store</h1>
+
+    <h1>
+        Mahalaxmi Xerox Centre & General Store
+    </h1>
+
 
     <p class="subtitle">
         Upload your document and place your print order
     </p>
 
+
+
     <label><b>Select Service</b></label>
+
 
     <select id="service">
 
-        <option value="document">📄 Document Print</option>
+        <option value="document">
+            📄 Document Print
+        </option>
 
-        <option value="aadhaar">🪪 Aadhaar Card Print</option>
+        <option value="aadhaar">
+            🪪 Aadhaar Card Print
+        </option>
 
-        <option value="pan">💳 PAN Card Print</option>
+        <option value="pan">
+            💳 PAN Card Print
+        </option>
 
-        <option value="passport">📷 Passport Photo</option>
+        <option value="passport">
+            📷 Passport Photo
+        </option>
 
-        <option value="photo">🖼 Photo Print (4x6)</option>
+        <option value="photo">
+            🖼 Photo Print (4x6)
+        </option>
 
     </select>
 
+
+
     <label><b>Upload Document</b></label>
+
 
     <input
         type="file"
         id="file"
         accept=".pdf,image/*">
 
+
+
+    <!-- PRINT PREVIEW AREA -->
+
+    <div class="print-area" id="printArea">
+
+        <img id="previewImage">
+
+    </div>
+
+
+
     <label><b>Print Type</b></label>
+
 
     <div class="radio">
 
@@ -66,6 +100,8 @@
 
     </div>
 
+
+
     <div class="radio">
 
         <label>
@@ -80,7 +116,10 @@
 
     </div>
 
+
+
     <label><b>Number of Copies</b></label>
+
 
     <input
         type="number"
@@ -88,36 +127,60 @@
         value="1"
         min="1">
 
+
+
     <div class="file-info">
 
-        <h3>Selected File</h3>
+
+        <h3>
+            Selected File
+        </h3>
+
 
         <p id="fileName">
             No file selected
         </p>
 
+
     </div>
 
+
+
+
     <div class="summary">
+
 
         <p>
             Pages :
             <span id="pages">1</span>
         </p>
 
+
+
         <p>
             Rate :
             <span id="rate">₹5</span>
         </p>
 
+
     </div>
+
+
+
 
     <div class="total">
 
+
         Total :
-        <span id="totalPrice">₹5</span>
+        <span id="totalPrice">
+            ₹5
+        </span>
+
 
     </div>
+
+
+
 
     <button id="orderBtn">
 
@@ -125,22 +188,35 @@
 
     </button>
 
+
+
 </div>
+
+
+
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
+
 <script>
+
 pdfjsLib.GlobalWorkerOptions.workerSrc =
 "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
 </script>
+
+
 
 <script src="supabase.js"></script>
 
 <script src="script.js"></script>
 
 <script src="upload.js"></script>
+
+
 
 </body>
 
