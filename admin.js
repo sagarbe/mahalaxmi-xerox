@@ -44,48 +44,81 @@ async function loadPrices() {
     .from("settings")
     .select("*");
 
-    if (error) {
+
+    if(error){
 
         console.log(error.message);
         return;
 
     }
 
+
     data.forEach(item => {
 
-        if (item.key === "bw_price") {
+
+        if(item.key === "bw_price"){
 
             bwPrice.value = item.value;
 
         }
 
-        if (item.key === "color_price") {
+
+        if(item.key === "color_price"){
 
             colorPrice.value = item.value;
 
         }
 
+
     });
+
 
 }
 
+
+// SAVE PRICE
+
 savePriceBtn.onclick = async () => {
 
+
+    const { error: bwError } =
     await supabaseClient
     .from("settings")
     .update({
+
         value: bwPrice.value
-    })
-    .eq("key", "bw_price");
 
+    })
+    .eq("key","bw_price");
+
+
+
+    const { error: colorError } =
     await supabaseClient
     .from("settings")
     .update({
-        value: colorPrice.value
-    })
-    .eq("key", "color_price");
 
-    alert("✅ Prices Updated");
+        value: colorPrice.value
+
+    })
+    .eq("key","color_price");
+
+
+
+    if(bwError || colorError){
+
+        alert("Price Update Failed");
+
+        console.log(bwError || colorError);
+
+        return;
+
+    }
+
+
+
+    alert("✅ Prices Updated Successfully");
+
 
 };
 

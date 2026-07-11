@@ -16,22 +16,51 @@ let colorPrice = 10;
 // LOAD PRICE FROM SUPABASE
 async function loadPrices() {
 
-    const { data, error } = await supabaseClient
-        .from("settings")
-        .select("*")
-        .eq("id", 1)
-        .single();
 
-    if (error) {
+    const { data, error } =
+    await supabaseClient
+    .from("settings")
+    .select("*");
+
+
+
+    if(error){
+
         console.log(error.message);
+
         calculate();
+
         return;
+
     }
 
-    bwPrice = Number(data.bw_price);
-    colorPrice = Number(data.color_price);
+
+
+    data.forEach(item => {
+
+
+        if(item.key === "bw_price"){
+
+            bwPrice = Number(item.value);
+
+        }
+
+
+
+        if(item.key === "color_price"){
+
+            colorPrice = Number(item.value);
+
+        }
+
+
+    });
+
+
 
     calculate();
+
+
 }
 
 // FILE SELECT
