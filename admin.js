@@ -67,48 +67,33 @@ async function loadPrices() {
 
 savePriceBtn.onclick = async () => {
 
-
-    const { error: bwError } =
+    const { error } =
     await supabaseClient
     .from("settings")
     .update({
 
-        value: bwPrice.value
+        bw_price: Number(bwPrice.value),
+
+        color_price: Number(colorPrice.value)
 
     })
-    .eq("key","bw_price");
+    .eq("id",1);
 
 
-
-    const { error: colorError } =
-    await supabaseClient
-    .from("settings")
-    .update({
-
-        value: colorPrice.value
-
-    })
-    .eq("key","color_price");
-
-
-
-    if(bwError || colorError){
+    if(error){
 
         alert("Price Update Failed");
 
-        console.log(bwError || colorError);
+        console.log(error);
 
         return;
 
     }
 
 
-
-    alert("✅ Prices Updated Successfully");
-
+    alert("✅ Prices Updated");
 
 };
-
 // ---------------- LOAD ORDERS ----------------
 
 async function loadOrders() {
