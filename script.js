@@ -15,7 +15,7 @@ let bwPrice = 5;
 let colorPrice = 10;
 
 
-// LOAD PRICE FROM SUPABASE
+// ================= LOAD PRICE =================
 
 async function loadPrices() {
 
@@ -60,7 +60,7 @@ async function loadPrices() {
 
 
 
-// FILE SELECT
+// ================= FILE SELECT =================
 
 printFileInput.addEventListener("change", () => {
 
@@ -89,7 +89,8 @@ printFileInput.addEventListener("change", () => {
 
 
 
-// CALCULATE TOTAL
+
+// ================= CALCULATE =================
 
 function calculate(){
 
@@ -125,63 +126,79 @@ function calculate(){
     "₹" + total;
 
 
-
 }
 
 
 
-// PRINT TYPE CHANGE
+
+// ================= PRINT TYPE =================
 
 printRadios.forEach(radio => {
 
 
-    radio.addEventListener("change", calculate);
+    radio.addEventListener(
+        "change",
+        calculate
+    );
 
 
 });
 
 
 
-// COPIES CHANGE
+
+// ================= COPIES =================
 
 copiesInput.addEventListener(
-"input",
-calculate
+    "input",
+    calculate
 );
 
 
 
-// START
 
-loadPrices();
-
-// START
-
-loadPrices();
-// REALTIME PRICE UPDATE
+// ================= REALTIME PRICE UPDATE =================
 
 supabaseClient
 .channel("price-update")
 .on(
     "postgres_changes",
     {
-        event: "UPDATE",
-        schema: "public",
-        table: "settings",
-        filter: "id=eq.1"
+        event:"UPDATE",
+        schema:"public",
+        table:"settings",
+        filter:"id=eq.1"
     },
-    (payload) => {
-
-        console.log("Price Updated Live:", payload.new);
+    (payload)=>{
 
 
-        bwPrice = Number(payload.new.bw_price);
+        console.log(
+            "LIVE PRICE UPDATE:",
+            payload.new
+        );
 
-        colorPrice = Number(payload.new.color_price);
+
+
+        bwPrice =
+        Number(payload.new.bw_price);
+
+
+
+        colorPrice =
+        Number(payload.new.color_price);
+
 
 
         calculate();
 
+
     }
 )
 .subscribe();
+
+
+
+
+// ================= START =================
+
+loadPrices();
