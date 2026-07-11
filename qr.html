@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Mahalaxmi Xerox QR</title>
+
+<style>
+
+body{
+
+    margin:0;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:#eef3f8;
+    font-family:Arial,sans-serif;
+
+}
+
+
+.card{
+
+    background:white;
+    padding:30px;
+    text-align:center;
+    border-radius:15px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.2);
+
+}
+
+
+h1{
+
+    color:#d32f2f;
+
+}
+
+
+p{
+
+    font-size:18px;
+    color:#555;
+
+}
+
+
+#qrcode{
+
+    margin-top:20px;
+    display:flex;
+    justify-content:center;
+
+}
+
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="card">
+
+
+<h1>
+🖨 Mahalaxmi Xerox Centre
+</h1>
+
+
+<p>
+Scan QR & Place Your Print Order
+</p>
+
+
+<div id="qrcode"></div>
+
+
+</div>
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+
+<script>
+
+new QRCode(
+
+document.getElementById("qrcode"),
+
+{
+
+    text:"https://sagarbe.github.io/mahalaxmi-xerox/",
+
+    width:250,
+
+    height:250
+
+}
+
+);
+
+</script>
+
+
+</body>
+
+</html>
