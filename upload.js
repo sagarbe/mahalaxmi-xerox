@@ -3,13 +3,8 @@ const orderButton = document.getElementById("orderBtn");
 const fileInput = document.getElementById("file");
 const serviceSelect = document.getElementById("service");
 
-
-const totalDisplay = document.getElementById("totalPrice");
-const printRadios = document.getElementsByName("print");
-
-const pagesDisplay = document.getElementById("pages");
-
 let detectedPages = 1;
+
 
 // ---------------- PDF PAGE COUNT ----------------
 
@@ -19,6 +14,7 @@ fileInput.addEventListener("change", async () => {
 
     if (!file) return;
 
+
     // PDF
     if (file.type === "application/pdf") {
 
@@ -26,12 +22,13 @@ fileInput.addEventListener("change", async () => {
 
             const buffer = await file.arrayBuffer();
 
-            const pdf =
-                await pdfjsLib.getDocument({
-                    data: buffer
-                }).promise;
+            const pdf = await pdfjsLib.getDocument({
+                data: buffer
+            }).promise;
+
 
             detectedPages = pdf.numPages;
+
 
         } catch (err) {
 
@@ -49,19 +46,33 @@ fileInput.addEventListener("change", async () => {
 
     }
 
+
+    // Update page display
     pagesDisplay.innerText = detectedPages;
 
+
+    // Update script.js page count
+    pageCount = detectedPages;
+
+
+    // Recalculate amount
     if (typeof calculate === "function") {
+
         calculate();
+
     }
 
 });
+
+
 
 // ---------------- PLACE ORDER ----------------
 
 orderButton.addEventListener("click", async () => {
 
+
     const selectedFile = fileInput.files[0];
+
 
     if (!selectedFile) {
 
@@ -71,17 +82,24 @@ orderButton.addEventListener("click", async () => {
 
     }
 
+
+
     const cleanFileName = selectedFile.name
         .replace(/\s+/g, "_")
         .replace(/[^a-zA-Z0-9._-]/g, "");
 
+
+
     const newFileName =
         Date.now() + "_" + cleanFileName;
 
-    // Upload
+
+
+    // ---------------- UPLOAD FILE ----------------
+
 
     const { error: uploadError } =
-    await supabaseClient.storage
+        await supabaseClient.storage
         .from("documents")
         .upload(
             newFileName,
@@ -91,6 +109,8 @@ orderButton.addEventListener("click", async () => {
                 upsert: false
             }
         );
+
+
 
     if (uploadError) {
 
@@ -102,20 +122,28 @@ orderButton.addEventListener("click", async () => {
 
     }
 
-    // Public URL
+
+
+
+    // ---------------- GET FILE URL ----------------
+
 
     const { data } =
-    supabaseClient.storage
+        supabaseClient.storage
         .from("documents")
         .getPublicUrl(newFileName);
 
-    const fileURL =
-        data.publicUrl;
 
-    // Print Type
 
-    let printType =
-        "Black & White";
+    const fileURL = data.publicUrl;
+
+
+
+    // ---------------- PRINT TYPE ----------------
+
+
+    let printType = "Black & White";
+
 
     if (printRadios[1].checked) {
 
@@ -123,24 +151,39 @@ orderButton.addEventListener("click", async () => {
 
     }
 
-    // Copies
+
+
+
+    // ---------------- COPIES ----------------
+
 
     const copies =
         parseInt(copiesInput.value) || 1;
 
-    // Amount
+
+
+
+    // ---------------- AMOUNT ----------------
+
 
     const amount =
         parseInt(
             totalDisplay.innerText.replace("₹", "")
         );
 
-    // Save Order
+
+
+
+
+    // ---------------- INSERT ORDER ----------------
+
 
     const { error: orderError } =
-    await supabaseClient
+        await supabaseClient
         .from("orders")
-        .insert([{
+        .insert([
+
+        {
 
             file_name: newFileName,
 
@@ -162,18 +205,34 @@ orderButton.addEventListener("click", async () => {
 
             print_status: "Pending"
 
-        }]);
+        }
+
+        ]);
+
+
+
+
 
     if (orderError) {
 
+
         alert(orderError.message);
+
+        console.log(orderError);
 
         return;
 
+
     }
+
+
+
 
     alert("✅ Order Placed Successfully");
 
+
     location.reload();
+
+
 
 });
