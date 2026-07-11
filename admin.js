@@ -38,6 +38,12 @@ async function checkLogin(){
 
 async function loadOrders(){
 
+    const { data, error } = await supabaseClient
+    .from("orders")
+    .select("*");
+
+console.log("Orders:", data);
+console.log("Error:", error);
 
     const {data,error}=await supabaseClient
     .from("orders")
