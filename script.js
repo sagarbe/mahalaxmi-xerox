@@ -1,3 +1,4 @@
+const serviceSelect = document.getElementById("service");
 const printFileInput = document.getElementById("file");
 const fileNameDisplay = document.getElementById("fileName");
 
@@ -60,6 +61,45 @@ async function loadPrices() {
 
 }
 
+// ================= SERVICE CHANGE =================
+
+serviceSelect.addEventListener("change",()=>{
+
+
+    const service = serviceSelect.value;
+
+
+    if(service === "aadhaar"){
+
+        console.log("Aadhaar Print Selected");
+
+        pageCount = 1;
+
+    }
+
+
+    else if(service === "pan"){
+
+        console.log("PAN Card Print Selected");
+
+        pageCount = 1;
+
+    }
+
+
+    else{
+
+        pageCount = 1;
+
+    }
+
+
+    pagesDisplay.innerText = pageCount;
+
+    calculate();
+
+
+});
 
 
 // ================= FILE SELECT =================
