@@ -142,3 +142,90 @@ logoutBtn.addEventListener("click", async () => {
 });
 
 checkLogin();
+// =========================
+// PRINT ORDER
+// =========================
+
+async function printOrder(id) {
+
+    const ok = confirm("Print this order?");
+
+    if (!ok) return;
+
+    // Status = Printing
+
+    const { error } = await supabaseClient
+        .from("orders")
+        .update({
+            print_status: "Printing"
+        })
+        .eq("id", id);
+
+    if (error) {
+        alert(error.message);
+        return;
+    }
+
+    loadOrders();
+
+    // PDF Open
+
+    const order = allOrders.find(o => o.id === id);
+
+    if (order) {
+        window.open(order.file_url, "_blank");
+    }
+
+    // 3 sec नंतर Printed
+
+    setTimeout(async () => {
+
+        await supabaseClient
+            .from("orders")
+            .update({
+                print_status: "Printed"
+            })
+            .eq("id", id);
+
+        loadOrders();
+
+    }, 3000);
+
+}
+
+
+
+// =========================
+// AUTO REFRESH EVERY 5 SEC
+// =========================
+
+setInterval(() => {
+
+    loadOrders();
+
+}, 5000);
+
+
+
+// =========================
+// REALTIME
+// =========================
+
+supabaseClient
+.channel("orders-channel")
+
+.on(
+"postgres_changes",
+{
+event: "*",
+schema: "public",
+table: "orders"
+},
+() => {
+
+loadOrders();
+
+}
+)
+
+.subscribe();
