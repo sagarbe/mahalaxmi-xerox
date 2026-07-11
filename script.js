@@ -10,17 +10,17 @@ const pagesDisplay = document.getElementById("pages");
 
 let pageCount = 1;
 
-// Default Prices
 let bwPrice = 5;
 let colorPrice = 10;
 
-// ---------------- LOAD PRICE ----------------
-
+// LOAD PRICE FROM SUPABASE
 async function loadPrices() {
 
     const { data, error } = await supabaseClient
         .from("settings")
-        .select("*");
+        .select("*")
+        .eq("id", 1)
+        .single();
 
     if (error) {
         console.log(error.message);
@@ -28,36 +28,19 @@ async function loadPrices() {
         return;
     }
 
-    data.forEach(item => {
-
-        if (item.key === "bw_price") {
-            bwPrice = Number(item.value);
-        }
-
-        if (item.key === "color_price") {
-            colorPrice = Number(item.value);
-        }
-
-    });
+    bwPrice = Number(data.bw_price);
+    colorPrice = Number(data.color_price);
 
     calculate();
-
 }
 
-// ---------------- FILE ----------------
-
+// FILE SELECT
 printFileInput.addEventListener("change", () => {
 
     if (printFileInput.files.length > 0) {
-
-        fileNameDisplay.innerText =
-            printFileInput.files[0].name;
-
+        fileNameDisplay.innerText = printFileInput.files[0].name;
     } else {
-
-        fileNameDisplay.innerText =
-            "No file selected";
-
+        fileNameDisplay.innerText = "No file selected";
     }
 
     pagesDisplay.innerText = pageCount;
@@ -66,47 +49,31 @@ printFileInput.addEventListener("change", () => {
 
 });
 
-// ---------------- CALCULATE ----------------
-
+// CALCULATE TOTAL
 function calculate() {
 
     let price = bwPrice;
 
     if (printRadios[1].checked) {
-
         price = colorPrice;
-
     }
 
     rateDisplay.innerText = "₹" + price;
 
-    const copies =
-        parseInt(copiesInput.value) || 1;
+    const copies = parseInt(copiesInput.value) || 1;
 
-    const total =
-        price * pageCount * copies;
+    const total = price * pageCount * copies;
 
-    totalDisplay.innerText =
-        "₹" + total;
+    totalDisplay.innerText = "₹" + total;
 
 }
 
-// ---------------- EVENTS ----------------
-
+// EVENTS
 printRadios.forEach(radio => {
-
-    radio.addEventListener(
-        "change",
-        calculate
-    );
-
+    radio.addEventListener("change", calculate);
 });
 
-copiesInput.addEventListener(
-    "input",
-    calculate
-);
+copiesInput.addEventListener("input", calculate);
 
-// ---------------- START ----------------
-
+// START
 loadPrices();
