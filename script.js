@@ -154,3 +154,34 @@ calculate
 // START
 
 loadPrices();
+
+// START
+
+loadPrices();
+// REALTIME PRICE UPDATE
+
+supabaseClient
+.channel("price-update")
+.on(
+    "postgres_changes",
+    {
+        event: "UPDATE",
+        schema: "public",
+        table: "settings",
+        filter: "id=eq.1"
+    },
+    (payload) => {
+
+        console.log("Price Updated Live:", payload.new);
+
+
+        bwPrice = Number(payload.new.bw_price);
+
+        colorPrice = Number(payload.new.color_price);
+
+
+        calculate();
+
+    }
+)
+.subscribe();
