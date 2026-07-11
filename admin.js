@@ -1,5 +1,14 @@
-const table = document.getElementById("ordersBody");
+const table = document.getElementById("ordersTable");
 const logoutBtn = document.getElementById("logoutBtn");
+const refreshBtn = document.getElementById("refreshBtn");
+const searchBox = document.getElementById("searchBox");
+
+const totalOrders = document.getElementById("totalOrders");
+const pendingOrders = document.getElementById("pendingOrders");
+const printedOrders = document.getElementById("printedOrders");
+const totalIncome = document.getElementById("totalIncome");
+
+let allOrders = [];
 
 async function checkLogin() {
 
@@ -21,42 +30,115 @@ async function loadOrders() {
         .order("id", { ascending: false });
 
     if (error) {
-        console.log("Load Error:", error);
+        console.log(error);
         return;
     }
 
-    console.log("Orders:", data);
+    allOrders = data;
+
+    updateDashboard();
+
+    displayOrders(allOrders);
+}
+
+function updateDashboard() {
+
+    totalOrders.innerText = allOrders.length;
+
+    pendingOrders.innerText =
+        allOrders.filter(o => o.print_status === "Pending").length;
+
+    printedOrders.innerText =
+        allOrders.filter(o => o.print_status === "Printed").length;
+
+    let income = 0;
+
+    allOrders.forEach(order => {
+
+        income += order.amount || 0;
+
+    });
+
+    totalIncome.innerText = "₹" + income;
+
+}
+
+function displayOrders(list) {
 
     table.innerHTML = "";
 
-    data.forEach(order => {
+    list.forEach(order => {
 
         table.innerHTML += `
-        <tr>
-            <td>${order.id}</td>
-            <td><a href="${order.file_url}" target="_blank">Open File</a></td>
-            <td>${order.service}</td>
-            <td>${order.print_type}</td>
-            <td>${order.copies}</td>
-            <td>₹${order.amount}</td>
-            <td>${order.print_status}</td>
-        </tr>
-        `;
+
+<tr>
+
+<td>${order.id}</td>
+
+<td>
+
+<a href="${order.file_url}" target="_blank">
+
+📄 View
+
+</a>
+
+</td>
+
+<td>${order.service}</td>
+
+<td>${order.print_type}</td>
+
+<td>${order.page_count ?? "-"}</td>
+
+<td>${order.copies}</td>
+
+<td>₹${order.amount}</td>
+
+<td>${order.print_status}</td>
+
+<td>
+
+<button onclick="printOrder(${order.id})">
+
+🖨 Print
+
+</button>
+
+</td>
+
+</tr>
+
+`;
 
     });
+
 }
+
+searchBox.addEventListener("keyup", () => {
+
+    const value = searchBox.value.toLowerCase();
+
+    const filtered = allOrders.filter(order =>
+
+        (order.file_name || "")
+        .toLowerCase()
+        .includes(value)
+
+    );
+
+    displayOrders(filtered);
+
+});
+
+refreshBtn.addEventListener("click", loadOrders);
 
 logoutBtn.addEventListener("click", async () => {
 
-    const { error } = await supabaseClient.auth.signOut();
-
-    if (error) {
-        console.log(error);
-        alert(error.message);
-        return;
-    }
+    await supabaseClient.auth.signOut();
 
     window.location.href = "login.html";
+
 });
 
 checkLogin();
