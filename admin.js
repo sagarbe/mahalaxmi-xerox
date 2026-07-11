@@ -38,17 +38,32 @@ async function checkLogin(){
 
 async function loadOrders(){
 
-    const { data, error } = await supabaseClient
-    .from("orders")
-    .select("*");
-
-console.log("Orders:", data);
-console.log("Error:", error);
-
-    const {data,error}=await supabaseClient
+    const { data: orders, error } = await supabaseClient
     .from("orders")
     .select("*")
     .order("id",{ascending:false});
+
+
+    console.log("Orders:", orders);
+    console.log("Error:", error);
+
+
+    if(error){
+
+        console.log(error);
+        return;
+
+    }
+
+
+    allOrders = orders || [];
+
+
+    updateDashboard();
+
+    displayOrders(allOrders);
+
+}
 
 
 
