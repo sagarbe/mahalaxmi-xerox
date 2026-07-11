@@ -2,47 +2,111 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
 
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Admin Dashboard</title>
+
+<link rel="stylesheet" href="style.css">
+
 </head>
 
 <body>
 
 <div class="container">
 
-    <h1>🖨️ Mahalaxmi Xerox Admin</h1>
+<h1>🖨 Mahalaxmi Xerox Admin</h1>
 
-    <button id="logoutBtn">Logout</button>
+<div class="top-bar">
 
-    <br><br>
+<button id="refreshBtn">
+🔄 Refresh
+</button>
 
-    <table id="ordersTable">
+<button id="logoutBtn">
+🚪 Logout
+</button>
 
-       <thead>
+</div>
+
+<div class="dashboard">
+
+<div class="card">
+
+<h3>Total Orders</h3>
+
+<h2 id="totalOrders">0</h2>
+
+</div>
+
+<div class="card">
+
+<h3>Pending</h3>
+
+<h2 id="pendingOrders">0</h2>
+
+</div>
+
+<div class="card">
+
+<h3>Printed</h3>
+
+<h2 id="printedOrders">0</h2>
+
+</div>
+
+<div class="card">
+
+<h3>Total Income</h3>
+
+<h2 id="totalIncome">₹0</h2>
+
+</div>
+
+</div>
+
+<input
+type="text"
+id="searchBox"
+placeholder="Search File..."
+>
+
+<br><br>
+
+<table>
+
+<thead>
+
 <tr>
-    <th>ID</th>
-    <th>File</th>
-    <th>Service</th>
-    <th>Print</th>
-    <th>Copies</th>
-    <th>Amount</th>
-    <th>Status</th>
-    <th>Action</th>
+
+<th>ID</th>
+
+<th>File</th>
+
+<th>Service</th>
+
+<th>Print</th>
+
+<th>Pages</th>
+
+<th>Copies</th>
+
+<th>Amount</th>
+
+<th>Status</th>
+
+<th>Action</th>
+
 </tr>
+
 </thead>
 
-<tbody id="ordersBody">
+<tbody id="ordersTable">
 
 </tbody>
 
-        <tbody>
-
-        </tbody>
-
-    </table>
+</table>
 
 </div>
 
