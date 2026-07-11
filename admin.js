@@ -1,4 +1,5 @@
 const table = document.getElementById("ordersTable");
+
 const logoutBtn = document.getElementById("logoutBtn");
 const refreshBtn = document.getElementById("refreshBtn");
 const searchBox = document.getElementById("searchBox");
@@ -8,101 +9,209 @@ const pendingOrders = document.getElementById("pendingOrders");
 const printedOrders = document.getElementById("printedOrders");
 const totalIncome = document.getElementById("totalIncome");
 
+// Price Settings
+const bwPrice = document.getElementById("bwPrice");
+const colorPrice = document.getElementById("colorPrice");
+const savePriceBtn = document.getElementById("savePriceBtn");
+
 let allOrders = [];
 
-// LOGIN
+// ---------------- LOGIN ----------------
+
 async function checkLogin() {
 
-    const { data } = await supabaseClient.auth.getSession();
+    const { data } =
+    await supabaseClient.auth.getSession();
 
     if (!data.session) {
+
         window.location.href = "login.html";
         return;
+
     }
 
+    loadPrices();
     loadOrders();
+
 }
 
-// LOAD ORDERS
-async function loadOrders() {
+// ---------------- PRICE SETTINGS ----------------
 
-    const { data: orders, error } = await supabaseClient
-        .from("orders")
-        .select("*")
-        .order("id", { ascending: false });
+async function loadPrices() {
+
+    const { data, error } =
+    await supabaseClient
+    .from("settings")
+    .select("*");
 
     if (error) {
+
+        console.log(error.message);
+        return;
+
+    }
+
+    data.forEach(item => {
+
+        if (item.key === "bw_price") {
+
+            bwPrice.value = item.value;
+
+        }
+
+        if (item.key === "color_price") {
+
+            colorPrice.value = item.value;
+
+        }
+
+    });
+
+}
+
+savePriceBtn.onclick = async () => {
+
+    await supabaseClient
+    .from("settings")
+    .update({
+        value: bwPrice.value
+    })
+    .eq("key", "bw_price");
+
+    await supabaseClient
+    .from("settings")
+    .update({
+        value: colorPrice.value
+    })
+    .eq("key", "color_price");
+
+    alert("✅ Prices Updated");
+
+};
+
+// ---------------- LOAD ORDERS ----------------
+
+async function loadOrders() {
+
+    const { data: orders, error } =
+    await supabaseClient
+    .from("orders")
+    .select("*")
+    .order("id", {
+        ascending: false
+    });
+
+    if (error) {
+
         alert(error.message);
         return;
+
     }
 
     allOrders = orders || [];
 
     updateDashboard();
+
     displayOrders(allOrders);
+
 }
 
-// DASHBOARD
+// ---------------- DASHBOARD ----------------
+
 function updateDashboard() {
 
-    totalOrders.innerText = allOrders.length;
+    totalOrders.innerText =
+    allOrders.length;
 
     pendingOrders.innerText =
-        allOrders.filter(o => o.print_status === "Pending").length;
+    allOrders.filter(
+        o => o.print_status === "Pending"
+    ).length;
 
     printedOrders.innerText =
-        allOrders.filter(o => o.print_status === "Printed").length;
+    allOrders.filter(
+        o => o.print_status === "Printed"
+    ).length;
 
     let income = 0;
 
     allOrders.forEach(order => {
+
         income += Number(order.amount || 0);
+
     });
 
-    totalIncome.innerText = "₹" + income;
+    totalIncome.innerText =
+    "₹" + income;
+
 }
 
-// DISPLAY
+// ---------------- DISPLAY ----------------
+
 function displayOrders(list) {
 
     table.innerHTML = "";
 
     list.forEach(order => {
 
-        let paymentButtons = "";
+        let actionButtons = "";
 
+        // Payment Pending
         if (order.payment === "Pending") {
 
-            paymentButtons = `
+            actionButtons = `
                 <button class="cash" onclick="approveCash(${order.id})">
-                    💵 Cash Approve
+                    💵 Cash
                 </button>
 
                 <button class="upi" onclick="approveUPI(${order.id})">
-                    📱 UPI Approve
+                    📱 UPI
                 </button>
             `;
+
+        }
+        else {
+
+            actionButtons = `
+                <button class="print" onclick="reprint(${order.id})">
+                    🖨 Reprint
+                </button>
+            `;
+
         }
 
-        let badgeClass = "pending";
+        let badge = "";
 
-        if (order.print_status === "Printed")
-            badgeClass = "printed";
+        if (order.print_status === "Pending") {
 
-        else if (order.print_status === "Printing")
-            badgeClass = "printing";
+            badge = `<span class="pending">Pending</span>`;
 
-        else if (order.print_status === "Failed")
-            badgeClass = "failed";
+        }
+        else if (order.print_status === "Printing") {
+
+            badge = `<span class="printing">Printing</span>`;
+
+        }
+        else if (order.print_status === "Printed") {
+
+            badge = `<span class="printed">Printed</span>`;
+
+        }
+        else {
+
+            badge = `<span class="failed">Failed</span>`;
+
+        }
 
         table.innerHTML += `
+
         <tr>
 
             <td>${order.id}</td>
 
             <td>
                 <a href="${order.file_url}" target="_blank">
-                    📄 View
+                    ${order.file_name}
                 </a>
             </td>
 
@@ -122,43 +231,49 @@ function displayOrders(list) {
 
                 <br><br>
 
-                <span class="${badgeClass}">
-                    ${order.print_status}
-                </span>
+                ${badge}
 
             </td>
 
             <td>
 
-                ${paymentButtons}
+                ${actionButtons}
 
             </td>
 
         </tr>
+
         `;
+
     });
+
 }
 
-// SEARCH
+// ---------------- SEARCH ----------------
+
 searchBox.addEventListener("keyup", () => {
 
     const value = searchBox.value.toLowerCase();
 
     const filtered = allOrders.filter(order =>
         (order.file_name || "")
-            .toLowerCase()
-            .includes(value)
+        .toLowerCase()
+        .includes(value)
     );
 
     displayOrders(filtered);
+
 });
 
-// CASH APPROVE
+// ---------------- CASH ----------------
+
 async function approveCash(id) {
 
-    if (!confirm("Cash payment received?")) return;
+    if (!confirm("Cash Payment Received?"))
+        return;
 
-    const { error } = await supabaseClient
+    const { error } =
+    await supabaseClient
         .from("orders")
         .update({
             payment: "Cash"
@@ -166,21 +281,25 @@ async function approveCash(id) {
         .eq("id", id);
 
     if (error) {
+
         alert(error.message);
         return;
+
     }
 
-    alert("Cash Approved");
-
     loadOrders();
+
 }
 
-// UPI APPROVE
+// ---------------- UPI ----------------
+
 async function approveUPI(id) {
 
-    if (!confirm("UPI payment received?")) return;
+    if (!confirm("UPI Payment Received?"))
+        return;
 
-    const { error } = await supabaseClient
+    const { error } =
+    await supabaseClient
         .from("orders")
         .update({
             payment: "Paid"
@@ -188,16 +307,36 @@ async function approveUPI(id) {
         .eq("id", id);
 
     if (error) {
+
         alert(error.message);
         return;
+
     }
 
-    alert("UPI Approved");
-
     loadOrders();
+
 }
 
-// BUTTONS
+// ---------------- REPRINT ----------------
+
+async function reprint(id) {
+
+    if (!confirm("Reprint this order?"))
+        return;
+
+    await supabaseClient
+        .from("orders")
+        .update({
+            print_status: "Pending"
+        })
+        .eq("id", id);
+
+    loadOrders();
+
+}
+
+// ---------------- BUTTONS ----------------
+
 refreshBtn.onclick = loadOrders;
 
 logoutBtn.onclick = async () => {
@@ -205,15 +344,19 @@ logoutBtn.onclick = async () => {
     await supabaseClient.auth.signOut();
 
     window.location.href = "login.html";
+
 };
 
-// START
+// ---------------- START ----------------
+
 checkLogin();
 
-// AUTO REFRESH
+// ---------------- AUTO REFRESH ----------------
+
 setInterval(loadOrders, 5000);
 
-// REALTIME
+// ---------------- REALTIME ----------------
+
 supabaseClient
 .channel("orders-channel")
 .on(
@@ -225,6 +368,7 @@ supabaseClient
     },
     () => {
         loadOrders();
+        loadPrices();
     }
 )
 .subscribe();

@@ -10,43 +10,103 @@ const pagesDisplay = document.getElementById("pages");
 
 let pageCount = 1;
 
-// File Name
+// Default Prices
+let bwPrice = 5;
+let colorPrice = 10;
+
+// ---------------- LOAD PRICE ----------------
+
+async function loadPrices() {
+
+    const { data, error } = await supabaseClient
+        .from("settings")
+        .select("*");
+
+    if (error) {
+        console.log(error.message);
+        calculate();
+        return;
+    }
+
+    data.forEach(item => {
+
+        if (item.key === "bw_price") {
+            bwPrice = Number(item.value);
+        }
+
+        if (item.key === "color_price") {
+            colorPrice = Number(item.value);
+        }
+
+    });
+
+    calculate();
+
+}
+
+// ---------------- FILE ----------------
+
 printFileInput.addEventListener("change", () => {
 
     if (printFileInput.files.length > 0) {
-        fileNameDisplay.textContent = printFileInput.files[0].name;
+
+        fileNameDisplay.innerText =
+            printFileInput.files[0].name;
+
     } else {
-        fileNameDisplay.textContent = "No file selected";
+
+        fileNameDisplay.innerText =
+            "No file selected";
+
     }
 
-    pagesDisplay.textContent = pageCount;
+    pagesDisplay.innerText = pageCount;
 
     calculate();
 
 });
 
-// Calculate Price
+// ---------------- CALCULATE ----------------
+
 function calculate() {
 
-    let price = 5;
+    let price = bwPrice;
 
     if (printRadios[1].checked) {
-        price = 10;
+
+        price = colorPrice;
+
     }
 
-    rateDisplay.textContent = "₹" + price;
+    rateDisplay.innerText = "₹" + price;
 
-    const copies = parseInt(copiesInput.value) || 1;
+    const copies =
+        parseInt(copiesInput.value) || 1;
 
-    const total = price * pageCount * copies;
+    const total =
+        price * pageCount * copies;
 
-    totalDisplay.textContent = "₹" + total;
+    totalDisplay.innerText =
+        "₹" + total;
+
 }
 
+// ---------------- EVENTS ----------------
+
 printRadios.forEach(radio => {
-    radio.addEventListener("change", calculate);
+
+    radio.addEventListener(
+        "change",
+        calculate
+    );
+
 });
 
-copiesInput.addEventListener("input", calculate);
+copiesInput.addEventListener(
+    "input",
+    calculate
+);
 
-calculate();
+// ---------------- START ----------------
+
+loadPrices();

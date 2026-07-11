@@ -1,24 +1,29 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mahalaxmi Xerox Admin</title>
 
-    <link rel="stylesheet" href="admin.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Mahalaxmi Xerox Admin</title>
+
+<link rel="stylesheet" href="admin.css">
+
 </head>
 
 <body>
 
 <div class="container">
 
-    <header class="header">
+    <div class="header">
 
         <div>
+
             <h1>🖨 Mahalaxmi Xerox Admin</h1>
-            <p>Manage Orders & Printing</p>
+
+            <p>Print Management Dashboard</p>
+
         </div>
 
         <div class="header-buttons">
@@ -33,10 +38,12 @@
 
         </div>
 
-    </header>
+    </div>
 
 
-    <section class="dashboard">
+    <!-- Dashboard -->
+
+    <div class="dashboard">
 
         <div class="card">
             <h3>Total Orders</h3>
@@ -58,8 +65,53 @@
             <h2 id="totalIncome">₹0</h2>
         </div>
 
-    </section>
+    </div>
 
+
+    <!-- Price Settings -->
+
+    <div class="card settings-card">
+
+        <h2>⚙ Print Price Settings</h2>
+
+        <div class="settings-grid">
+
+            <div>
+
+                <label>Black & White Price (₹)</label>
+
+                <input
+                    type="number"
+                    id="bwPrice"
+                    min="1"
+                    value="5">
+
+            </div>
+
+            <div>
+
+                <label>Color Price (₹)</label>
+
+                <input
+                    type="number"
+                    id="colorPrice"
+                    min="1"
+                    value="10">
+
+            </div>
+
+        </div>
+
+        <button id="savePriceBtn">
+
+            💾 Save Prices
+
+        </button>
+
+    </div>
+
+
+    <!-- Search -->
 
     <div class="search-box">
 
@@ -70,6 +122,8 @@
 
     </div>
 
+
+    <!-- Orders -->
 
     <div class="table-container">
 
@@ -85,7 +139,7 @@
 
                     <th>Service</th>
 
-                    <th>Print Type</th>
+                    <th>Print</th>
 
                     <th>Pages</th>
 
@@ -120,4 +174,3 @@
 </body>
 
 </html>
-```

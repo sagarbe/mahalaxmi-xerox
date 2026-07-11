@@ -1,11 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mahalaxmi Xerox Centre & General Store</title>
 
-    <link rel="stylesheet" href="style.css">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Mahalaxmi Xerox Centre & General Store</title>
+
+<link rel="stylesheet" href="style.css">
+
 </head>
 
 <body>
@@ -38,22 +42,40 @@
 
     <label><b>Upload Document</b></label>
 
-    <input type="file" id="file">
+    <input
+        type="file"
+        id="file"
+        accept=".pdf,image/*">
 
     <label><b>Print Type</b></label>
 
     <div class="radio">
+
         <label>
-            <input type="radio" name="print" checked>
-            Black & White (₹5/Page)
+
+            <input
+                type="radio"
+                name="print"
+                checked>
+
+            Black & White
+
         </label>
+
     </div>
 
     <div class="radio">
+
         <label>
-            <input type="radio" name="print">
-            Color (₹10/Page)
+
+            <input
+                type="radio"
+                name="print">
+
+            Color
+
         </label>
+
     </div>
 
     <label><b>Number of Copies</b></label>
@@ -63,45 +85,54 @@
         id="copies"
         value="1"
         min="1">
+
     <div class="file-info">
 
-    <h3>Selected File</h3>
-    
-    <p id="fileName">
-    No file selected
-    </p>
-    
+        <h3>Selected File</h3>
+
+        <p id="fileName">
+            No file selected
+        </p>
+
+    </div>
+
+    <div class="summary">
+
+        <p>
+            Pages :
+            <span id="pages">1</span>
+        </p>
+
+        <p>
+            Rate :
+            <span id="rate">₹5</span>
+        </p>
+
     </div>
 
     <div class="total">
+
         Total :
         <span id="totalPrice">₹5</span>
-    </div>
-    <div class="summary">
 
-    <p>
-    Pages :
-    <span id="pages">
-    1
-    </span>
-    </p>
-    
-    <p>
-    Rate :
-    <span id="rate">
-    ₹5
-    </span>
-    </p>
-    
     </div>
 
     <button id="orderBtn">
-        🖨️ Place Order
+
+        🖨 Place Order
+
     </button>
 
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.5.136/pdf.min.js"></script>
+
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+"https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.5.136/pdf.worker.min.js";
+</script>
 
 <script src="supabase.js"></script>
 
@@ -110,4 +141,5 @@
 <script src="upload.js"></script>
 
 </body>
+
 </html>

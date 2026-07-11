@@ -1,51 +1,86 @@
 const orderButton = document.getElementById("orderBtn");
 
+const fileInput = document.getElementById("file");
+const serviceSelect = document.getElementById("service");
+const copiesInput = document.getElementById("copies");
+
+const totalDisplay = document.getElementById("totalPrice");
+const printRadios = document.getElementsByName("print");
+
+const pagesDisplay = document.getElementById("pages");
+
+let detectedPages = 1;
+
+// ---------------- PDF PAGE COUNT ----------------
+
+fileInput.addEventListener("change", async () => {
+
+    const file = fileInput.files[0];
+
+    if (!file) return;
+
+    // PDF
+    if (file.type === "application/pdf") {
+
+        try {
+
+            const buffer = await file.arrayBuffer();
+
+            const pdf =
+                await pdfjsLib.getDocument({
+                    data: buffer
+                }).promise;
+
+            detectedPages = pdf.numPages;
+
+        } catch (err) {
+
+            console.log(err);
+
+            detectedPages = 1;
+
+        }
+
+    }
+    else {
+
+        // Image
+        detectedPages = 1;
+
+    }
+
+    pagesDisplay.innerText = detectedPages;
+
+    if (typeof calculate === "function") {
+        calculate();
+    }
+
+});
+
+// ---------------- PLACE ORDER ----------------
 
 orderButton.addEventListener("click", async () => {
 
-
-    const fileInput = document.getElementById("file");
-    const serviceSelect = document.getElementById("service");
-    const copiesInput = document.getElementById("copies");
-    const totalDisplay = document.getElementById("totalPrice");
-    const printRadios = document.getElementsByName("print");
-
-
     const selectedFile = fileInput.files[0];
-
 
     if (!selectedFile) {
 
         alert("Please select a file");
+
         return;
 
     }
-
-
-
-    // Clean file name
 
     const cleanFileName = selectedFile.name
         .replace(/\s+/g, "_")
         .replace(/[^a-zA-Z0-9._-]/g, "");
 
-
-
     const newFileName =
         Date.now() + "_" + cleanFileName;
 
+    // Upload
 
-
-    console.log(
-        "Uploading:",
-        newFileName
-    );
-
-
-
-    // Upload File
-
-    const { data: uploadData, error: uploadError } =
+    const { error: uploadError } =
     await supabaseClient.storage
         .from("documents")
         .upload(
@@ -57,139 +92,88 @@ orderButton.addEventListener("click", async () => {
             }
         );
 
-
-
     if (uploadError) {
 
-        console.log(
-            "Storage Error:",
-            uploadError
-        );
+        alert("Upload Failed");
 
-        alert(
-            "File Upload Failed"
-        );
+        console.log(uploadError);
 
         return;
 
     }
 
-
-
-    console.log(
-        "Uploaded:",
-        uploadData
-    );
-
-
-
     // Public URL
 
-    const { data:urlData } =
+    const { data } =
     supabaseClient.storage
         .from("documents")
         .getPublicUrl(newFileName);
 
-
-
     const fileURL =
-    urlData.publicUrl;
-
-
+        data.publicUrl;
 
     // Print Type
 
     let printType =
-    "Black & White";
+        "Black & White";
 
+    if (printRadios[1].checked) {
 
-    if(printRadios[1].checked){
-
-        printType="Color";
+        printType = "Color";
 
     }
 
-
-
-    // Copies & Amount
+    // Copies
 
     const copies =
-    parseInt(copiesInput.value) || 1;
+        parseInt(copiesInput.value) || 1;
 
+    // Amount
 
     const amount =
-    parseInt(
-        totalDisplay.innerText.replace("₹","")
-    );
-
-
-
+        parseInt(
+            totalDisplay.innerText.replace("₹", "")
+        );
 
     // Save Order
 
-
-    const {error:orderError}=
-
+    const { error: orderError } =
     await supabaseClient
-    .from("orders")
-    .insert([
+        .from("orders")
+        .insert([{
 
-        {
+            file_name: newFileName,
 
-            file_name:newFileName,
+            file_url: fileURL,
 
-            file_url:fileURL,
+            service: serviceSelect.value,
 
-            service:serviceSelect.value,
+            print_type: printType,
 
-            print_type:printType,
+            copies: copies,
 
-            copies:copies,
+            page_count: detectedPages,
 
-            amount:amount,
+            amount: amount,
 
-            payment:"Pending",
+            payment: "Pending",
 
-            status:"New",
+            status: "New",
 
-            page_count:1,
+            print_status: "Pending"
 
-            print_status:"Pending"
+        }]);
 
-        }
+    if (orderError) {
 
-    ]);
-
-
-
-    if(orderError){
-
-
-        console.log(
-            "Database Error:",
-            orderError
-        );
-
-
-        alert(
-            "Order Save Failed"
-        );
+        alert(orderError.message);
 
         return;
 
-
     }
 
+    alert("✅ Order Placed Successfully");
 
-
-    alert(
-        "Order Placed Successfully!"
-    );
-
-
-    console.log(
-        "Order Saved Successfully"
-    );
-
+    location.reload();
 
 });
