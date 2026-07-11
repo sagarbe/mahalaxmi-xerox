@@ -1,4 +1,4 @@
-const table = document.getElementById("ordersTable");
+const table = document.getElementById("ordersBody");
 const logoutBtn = document.getElementById("logoutBtn");
 
 async function checkLogin() {
