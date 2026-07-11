@@ -34,7 +34,7 @@ async function loadPrices() {
 
     }
 
-
+    
 
     data.forEach(item => {
 
@@ -56,7 +56,8 @@ async function loadPrices() {
 
     });
 
-
+    console.log("B/W Price:", bwPrice);
+    console.log("Color Price:", colorPrice);
 
     calculate();
 

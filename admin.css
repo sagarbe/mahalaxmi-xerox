@@ -208,3 +208,32 @@ table{
 }
 
 }
+
+#savePriceBtn {
+
+    background: #16a34a;
+
+    color: white;
+
+    border: none;
+
+    padding: 12px 25px;
+
+    border-radius: 8px;
+
+    font-size: 16px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    margin-top: 20px;
+
+}
+
+
+#savePriceBtn:hover {
+
+    background: #15803d;
+
+}
