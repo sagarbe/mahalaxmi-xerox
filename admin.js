@@ -42,38 +42,25 @@ async function loadPrices() {
     const { data, error } =
     await supabaseClient
     .from("settings")
-    .select("*");
+    .select("*")
+    .eq("id",1)
+    .single();
 
 
     if(error){
-
         console.log(error.message);
         return;
-
     }
 
 
-    data.forEach(item => {
+    bwPrice.value = data.bw_price;
 
-
-        if(item.key === "bw_price"){
-
-            bwPrice.value = item.value;
-
-        }
-
-
-        if(item.key === "color_price"){
-
-            colorPrice.value = item.value;
-
-        }
-
-
-    });
-
+    colorPrice.value = data.color_price;
 
 }
+
+
+
 
 
 // SAVE PRICE
