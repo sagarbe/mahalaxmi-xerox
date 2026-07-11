@@ -8,7 +8,6 @@ const pendingOrders = document.getElementById("pendingOrders");
 const printedOrders = document.getElementById("printedOrders");
 const totalIncome = document.getElementById("totalIncome");
 
-
 let allOrders = [];
 
 
@@ -16,17 +15,14 @@ let allOrders = [];
 
 async function checkLogin(){
 
-    const {data} =
-    await supabaseClient.auth.getSession();
-
+    const { data } = await supabaseClient.auth.getSession();
 
     if(!data.session){
 
-        window.location.href="login.html";
+        window.location.href = "login.html";
         return;
 
     }
-
 
     loadOrders();
 
@@ -41,7 +37,7 @@ async function loadOrders(){
     const { data: orders, error } = await supabaseClient
     .from("orders")
     .select("*")
-    .order("id",{ascending:false});
+    .order("id", { ascending:false });
 
 
     console.log("Orders:", orders);
@@ -50,7 +46,7 @@ async function loadOrders(){
 
     if(error){
 
-        console.log(error);
+        console.log(error.message);
         return;
 
     }
@@ -67,180 +63,147 @@ async function loadOrders(){
 
 
 
-    if(error){
-
-        console.log(error);
-        return;
-
-    }
-
-
-
-    allOrders=data;
-
-
-    updateDashboard();
-
-    displayOrders(allOrders);
-
-
-}
-
-
-
 // DASHBOARD
 
 function updateDashboard(){
 
 
-    totalOrders.innerText =
-    allOrders.length;
-
+    totalOrders.innerText = allOrders.length;
 
 
     pendingOrders.innerText =
     allOrders.filter(
-        o=>o.print_status==="Pending"
+        o => o.print_status === "Pending"
     ).length;
-
 
 
     printedOrders.innerText =
     allOrders.filter(
-        o=>o.print_status==="Printed"
+        o => o.print_status === "Printed"
     ).length;
 
 
-
-    let income=0;
+    let income = 0;
 
 
     allOrders.forEach(order=>{
 
-        income += order.amount || 0;
+        income += Number(order.amount || 0);
 
     });
 
 
-
-    totalIncome.innerText="₹"+income;
+    totalIncome.innerText = "₹" + income;
 
 
 }
 
 
 
-// DISPLAY
+// DISPLAY ORDERS
 
 function displayOrders(list){
 
 
-table.innerHTML="";
+    table.innerHTML = "";
+
+
+    list.forEach(order=>{
+
+
+        let paymentButton = "";
+
+
+        if(order.payment === "Pending"){
+
+
+            paymentButton = `
+
+            <br>
+
+            <button onclick="approveCash(${order.id})">
+            💵 Cash Approve
+            </button>
+
+
+            <button onclick="approveUPI(${order.id})">
+            📱 UPI Approve
+            </button>
+
+            `;
+
+
+        }
 
 
 
-list.forEach(order=>{
+        table.innerHTML += `
+
+        <tr>
+
+        <td>${order.id}</td>
 
 
-let paymentButton="";
+        <td>
+
+        <a href="${order.file_url}" target="_blank">
+        📄 View PDF
+        </a>
+
+        </td>
 
 
-
-if(order.payment==="Pending"){
-
-
-paymentButton=`
-
-<br>
-
-<button onclick="approveCash(${order.id})">
-💵 Cash Approve
-</button>
+        <td>${order.service}</td>
 
 
-<button onclick="approveUPI(${order.id})">
-📱 UPI Approve
-</button>
-
-`;
+        <td>${order.print_type}</td>
 
 
-
-}
-
+        <td>${order.page_count ?? "-"}</td>
 
 
-table.innerHTML+=`
-
-<tr>
-
-<td>${order.id}</td>
+        <td>${order.copies}</td>
 
 
-<td>
-
-<a href="${order.file_url}" target="_blank">
-📄 View
-</a>
-
-</td>
+        <td>₹${order.amount}</td>
 
 
-<td>${order.service}</td>
+        <td>
 
+        Payment:
+        <b>${order.payment}</b>
 
-<td>${order.print_type}</td>
+        <br>
 
+        Print:
+        <b>${order.print_status}</b>
 
-<td>${order.page_count ?? "-"}</td>
-
-
-<td>${order.copies}</td>
-
-
-<td>₹${order.amount}</td>
-
-
-<td>
-
-Payment:
-<b>${order.payment}</b>
-
-<br>
-
-Print:
-<b>${order.print_status}</b>
-
-
-</td>
+        </td>
 
 
 
-<td>
+        <td>
 
 
-${paymentButton}
+        ${paymentButton}
 
 
-<button onclick="printOrder(${order.id})">
+        <button onclick="printOrder(${order.id})">
 
-🖨 Print
+        🖨 Print
 
-</button>
-
-
-
-</td>
+        </button>
 
 
-</tr>
+        </td>
 
 
-`;
+        </tr>
+
+        `;
 
 
-
-});
+    });
 
 
 }
@@ -249,33 +212,29 @@ ${paymentButton}
 
 // SEARCH
 
-searchBox.addEventListener(
-"keyup",
-()=>{
+if(searchBox){
+
+searchBox.addEventListener("keyup",()=>{
 
 
-const value=
-searchBox.value.toLowerCase();
+    const value = searchBox.value.toLowerCase();
 
 
+    const filtered = allOrders.filter(order=>
 
-const filtered =
-allOrders.filter(order=>
+        (order.file_name || "")
+        .toLowerCase()
+        .includes(value)
 
-(order.file_name || "")
-.toLowerCase()
-.includes(value)
-
-);
+    );
 
 
-
-displayOrders(filtered);
+    displayOrders(filtered);
 
 
 });
 
-
+}
 
 
 
@@ -284,44 +243,38 @@ displayOrders(filtered);
 async function approveCash(id){
 
 
-const ok =
-confirm(
-"Cash received?"
-);
+    const ok = confirm(
+        "Cash received?"
+    );
+
+
+    if(!ok) return;
 
 
 
-if(!ok)return;
+    const {error} = await supabaseClient
+    .from("orders")
+    .update({
+
+        payment:"Cash"
+
+    })
+    .eq("id",id);
 
 
 
-const {error}=await supabaseClient
-.from("orders")
-.update({
+    if(error){
 
-payment:"Cash"
+        alert(error.message);
+        return;
 
-})
-.eq("id",id);
+    }
 
 
-
-if(error){
-
-alert(error.message);
-return;
-
-}
+    alert("💵 Cash Approved");
 
 
-
-alert(
-"💵 Cash Approved"
-);
-
-
-
-loadOrders();
+    loadOrders();
 
 
 }
@@ -335,44 +288,38 @@ loadOrders();
 async function approveUPI(id){
 
 
-const ok =
-confirm(
-"UPI Payment Received?"
-);
+    const ok = confirm(
+        "UPI Payment Received?"
+    );
+
+
+    if(!ok) return;
 
 
 
-if(!ok)return;
+    const {error} = await supabaseClient
+    .from("orders")
+    .update({
+
+        payment:"Paid"
+
+    })
+    .eq("id",id);
 
 
 
-const {error}=await supabaseClient
-.from("orders")
-.update({
+    if(error){
 
-payment:"Paid"
+        alert(error.message);
+        return;
 
-})
-.eq("id",id);
+    }
 
 
-
-if(error){
-
-alert(error.message);
-return;
-
-}
+    alert("📱 UPI Approved");
 
 
-
-alert(
-"📱 UPI Approved"
-);
-
-
-
-loadOrders();
+    loadOrders();
 
 
 }
@@ -381,87 +328,91 @@ loadOrders();
 
 
 
-// MANUAL PRINT
+// PRINT
 
 async function printOrder(id){
 
 
-const ok =
-confirm(
-"Print this order?"
-);
+    const ok = confirm(
+        "Print this order?"
+    );
+
+
+    if(!ok) return;
 
 
 
-if(!ok)return;
+    await supabaseClient
+    .from("orders")
+    .update({
+
+        print_status:"Printing"
+
+    })
+    .eq("id",id);
 
 
 
-await supabaseClient
-.from("orders")
-.update({
-
-print_status:"Printing"
-
-})
-.eq("id",id);
+    loadOrders();
 
 
 
-loadOrders();
+    setTimeout(async()=>{
+
+
+        await supabaseClient
+        .from("orders")
+        .update({
+
+            print_status:"Printed"
+
+        })
+        .eq("id",id);
 
 
 
-setTimeout(async()=>{
+        loadOrders();
 
 
-await supabaseClient
-.from("orders")
-.update({
-
-print_status:"Printed"
-
-})
-.eq("id",id);
-
-
-
-loadOrders();
-
-
-
-},3000);
-
+    },3000);
 
 
 }
 
 
 
+// REFRESH BUTTON
 
-
+if(refreshBtn){
 
 refreshBtn.addEventListener(
 "click",
 loadOrders
 );
 
+}
 
+
+
+// LOGOUT
+
+if(logoutBtn){
 
 logoutBtn.addEventListener(
 "click",
 async()=>{
 
 
-await supabaseClient.auth.signOut();
+    await supabaseClient.auth.signOut();
 
 
-window.location.href="login.html";
+    window.location.href="login.html";
 
 
 });
 
 
+}
 
 
 
@@ -471,16 +422,13 @@ checkLogin();
 
 
 
-
 // AUTO REFRESH
 
 setInterval(()=>{
 
-loadOrders();
+    loadOrders();
 
 },5000);
-
-
 
 
 
@@ -492,15 +440,14 @@ supabaseClient
 .on(
 "postgres_changes",
 {
-event:"*",
-schema:"public",
-table:"orders"
+    event:"*",
+    schema:"public",
+    table:"orders"
 },
 ()=>{
 
-loadOrders();
+    loadOrders();
 
-}
+})
 
-)
 .subscribe();
