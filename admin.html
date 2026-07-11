@@ -1,36 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
 
-    <link rel="stylesheet" href="admin.css">
+    <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
 <div class="container">
 
-    <h1>🖨️ Admin Dashboard</h1>
+    <h1>🖨️ Mahalaxmi Xerox Admin</h1>
+
     <button id="logoutBtn">Logout</button>
 
-    <table>
+    <br><br>
+
+    <table id="ordersTable">
 
         <thead>
 
-            <tr>
-                <th>ID</th>
-                <th>File</th>
-                <th>Service</th>
-                <th>Print</th>
-                <th>Copies</th>
-                <th>Amount</th>
-                <th>Status</th>
-            </tr>
+        <tr>
+
+            <th>File</th>
+            <th>Service</th>
+            <th>Copies</th>
+            <th>Amount</th>
+            <th>Status</th>
+
+        </tr>
 
         </thead>
 
-        <tbody id="ordersTable">
+        <tbody>
 
         </tbody>
 
@@ -39,8 +44,11 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script src="supabase.js"></script>
+
 <script src="admin.js"></script>
 
 </body>
+
 </html>
