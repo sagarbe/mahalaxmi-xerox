@@ -2,7 +2,7 @@ const orderButton = document.getElementById("orderBtn");
 
 const fileInput = document.getElementById("file");
 const serviceSelect = document.getElementById("service");
-const copiesInput = document.getElementById("copies");
+
 
 const totalDisplay = document.getElementById("totalPrice");
 const printRadios = document.getElementsByName("print");
