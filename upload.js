@@ -2,7 +2,11 @@ const orderButton = document.getElementById("orderBtn");
 
 const fileInput = document.getElementById("file");
 const serviceSelect = document.getElementById("service");
+const paymentRadios =
+document.getElementsByName("payment");
 
+const upiBox =
+document.getElementById("upiBox");
 let detectedPages = 1;
 
 
@@ -64,7 +68,24 @@ fileInput.addEventListener("change", async () => {
 
 });
 
+paymentRadios.forEach(radio=>{
 
+    radio.addEventListener("change",()=>{
+
+        if(radio.value==="UPI" && radio.checked){
+
+            upiBox.style.display="block";
+
+        }
+        else if(radio.value==="Cash" && radio.checked){
+
+            upiBox.style.display="none";
+
+        }
+
+    });
+
+});
 
 // ---------------- PLACE ORDER ----------------
 
@@ -199,7 +220,10 @@ orderButton.addEventListener("click", async () => {
 
             amount: amount,
 
-            payment: "Pending",
+            payment:
+            document.querySelector(
+            'input[name="payment"]:checked'
+            ).value,
 
             status: "New",
 
