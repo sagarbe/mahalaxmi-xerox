@@ -2,11 +2,8 @@ const orderButton = document.getElementById("orderBtn");
 
 const fileInput = document.getElementById("file");
 const serviceSelect = document.getElementById("service");
-const paymentRadios =
-document.getElementsByName("payment");
-
-const upiBox =
-document.getElementById("upiBox");
+const paymentRadios =document.getElementsByName("payment");
+const upiBox =document.getElementById("upiBox");
 let detectedPages = 1;
 
 
