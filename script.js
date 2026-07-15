@@ -14,6 +14,8 @@ const printArea = document.getElementById("printArea");
 let cropper = null;
 let croppedImage = null;
 
+let croppedFile = null;
+
 let pageCount = 1;
 
 let bwPrice = 5;
@@ -335,80 +337,75 @@ loadPrices();
 
 // ================= APPLY CROP =================
 
+// ================= APPLY CROP =================
+
 const cropBtn = document.getElementById("applyCrop");
 
-if (cropBtn) {
 
-    cropBtn.addEventListener("click", () => {
-
-
-        if (!cropper) {
-
-            alert("Please upload an image first.");
-
-            return;
-
-        }
+if(cropBtn){
 
 
-        const canvas = cropper.getCroppedCanvas({
-
-            imageSmoothingEnabled:true,
-
-            imageSmoothingQuality:"high"
-
-        });
+cropBtn.addEventListener("click",()=>{
 
 
-        canvas.toBlob((blob)=>{
+    if(!cropper){
+
+        alert("Please upload image first");
+
+        return;
+
+    }
 
 
-            const originalName = printFileInput.files[0].name;
+    const canvas = cropper.getCroppedCanvas({
 
+        imageSmoothingEnabled:true,
 
-            const croppedFile = new File(
-
-                [blob],
-
-                originalName,
-
-                {
-                    type:"image/jpeg"
-                }
-
-            );
-
-
-            // replace original file
-
-            const dataTransfer = new DataTransfer();
-
-            dataTransfer.items.add(croppedFile);
-
-            printFileInput.files = dataTransfer.files;
-
-
-            // update preview
-
-            previewImage.src =
-            URL.createObjectURL(croppedFile);
-
-
-
-            cropper.destroy();
-
-            cropper=null;
-
-
-            console.log("New Cropped File:", printFileInput.files[0]);
-
-
-            alert("✅ Crop Applied Successfully");
-
-
-        },"image/jpeg",0.95);
-
+        imageSmoothingQuality:"high"
 
     });
+
+
+
+    canvas.toBlob((blob)=>{
+
+
+        croppedFile = new File(
+
+            [blob],
+
+            "cropped_image.jpg",
+
+            {
+                type:"image/jpeg"
+            }
+
+        );
+
+
+        previewImage.src =
+        URL.createObjectURL(croppedFile);
+
+
+
+        console.log("CROPPED FILE READY", croppedFile);
+
+
+
+        cropper.destroy();
+
+        cropper=null;
+
+
+
+        alert("✅ Crop Applied");
+
+
+    },"image/jpeg",0.95);
+
+
+
+});
+
 
 }

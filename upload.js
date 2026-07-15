@@ -56,6 +56,14 @@ orderButton.addEventListener("click",async()=>{
 
     let uploadFile=selectedFile;
 
+    if(croppedFile){
+
+    uploadFile=croppedFile;
+
+    console.log("Uploading Cropped File");
+
+}
+
 
 
     // ================= USE CROPPED IMAGE =================
