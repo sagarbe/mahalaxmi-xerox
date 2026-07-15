@@ -11,7 +11,6 @@ const upiBox = document.getElementById("upiBox");
 let detectedPages = 1;
 
 
-
 // ================= PAYMENT =================
 
 paymentRadios.forEach(radio=>{
@@ -42,9 +41,12 @@ paymentRadios.forEach(radio=>{
 
 orderButton.addEventListener("click",async()=>{
 
+
     console.log("ORDER START");
 
+
     const selectedFile=fileInput.files[0];
+
 
     if(!selectedFile){
 
@@ -54,47 +56,56 @@ orderButton.addEventListener("click",async()=>{
 
     }
 
-    let uploadFile=selectedFile;
 
-    if(croppedFile){
 
-    uploadFile=croppedFile;
-
-    console.log("Uploading Cropped File");
-
-}
+    let uploadFile = selectedFile;
 
 
 
-    // ================= USE MANUAL CROPPED IMAGE =================
+    // ================= USE MANUAL CROPPED FILE =================
 
-if(croppedFile){
 
-    uploadFile = croppedFile;
+    if(typeof croppedFile !== "undefined" && croppedFile){
 
-    console.log("Using Cropped File");
+        uploadFile = croppedFile;
 
-}
-        // ================= FILE NAME =================
+        console.log("Uploading Cropped File");
+
+    }
+
+
+
+    // ================= FILE NAME =================
+
 
     const cleanFileName = selectedFile.name
+
         .replace(/\s+/g, "_")
+
         .replace(/[^a-zA-Z0-9._-]/g, "");
 
+
+
     const newFileName =
+
         Date.now() + "_" + cleanFileName;
 
 
 
     // ================= UPLOAD =================
 
+
     console.log("UPLOAD START");
+
 
     const { error: uploadError } =
 
+
     await supabaseClient.storage
 
+
     .from("documents")
+
 
     .upload(
 
@@ -104,9 +115,9 @@ if(croppedFile){
 
         {
 
-            cacheControl: "3600",
+            cacheControl:"3600",
 
-            upsert: false
+            upsert:false
 
         }
 
@@ -116,105 +127,152 @@ if(croppedFile){
 
     if(uploadError){
 
+
         console.log(uploadError);
 
         alert("Upload Failed");
 
         return;
 
+
     }
+
 
 
 
     // ================= PUBLIC URL =================
 
-    const { data } =
+
+    const {data:urlData}=
+
 
     supabaseClient.storage
 
+
     .from("documents")
+
 
     .getPublicUrl(newFileName);
 
 
 
-    const fileURL = data.publicUrl;
+    const fileURL = urlData.publicUrl;
+
 
 
 
     // ================= PRINT TYPE =================
 
-    let printType = "Black & White";
+
+    let printType="Black & White";
+
 
     if(printRadios[1].checked){
 
-        printType = "Color";
+        printType="Color";
 
     }
 
 
 
-    // ================= ORDER =================
+
+
+    // ================= ORDER DATA =================
+
 
     const copies =
-    parseInt(copiesInput.value) || 1;
+
+    parseInt(copiesInput.value)||1;
+
+
 
     const amount =
+
     parseInt(
+
         totalDisplay.innerText.replace("₹","")
+
     );
 
 
 
-    const { error: orderError } =
+
+
+    const {error:orderError}=
+
 
     await supabaseClient
 
+
     .from("orders")
+
 
     .insert([{
 
-        file_name: newFileName,
 
-        file_url: fileURL,
+        file_name:newFileName,
 
-        service: document.getElementById("service").value,
 
-        print_type: printType,
+        file_url:fileURL,
 
-        copies: copies,
 
-        page_count: pageCount,
+        service:document.getElementById("service").value,
 
-        amount: amount,
 
-        payment: document.querySelector(
+        print_type:printType,
+
+
+        copies:copies,
+
+
+        page_count:pageCount,
+
+
+        amount:amount,
+
+
+        payment:document.querySelector(
+
             'input[name="payment"]:checked'
+
         ).value,
 
-        status: "New",
 
-        print_status: "Pending"
+        status:"New",
+
+
+        print_status:"Pending"
+
 
     }]);
 
 
 
+
+
     if(orderError){
+
 
         console.log(orderError);
 
+
         alert(orderError.message);
 
+
         return;
+
 
     }
 
 
 
+
+
     alert("✅ Order Placed Successfully");
+
 
     location.reload();
 
-});
 
+
+});
