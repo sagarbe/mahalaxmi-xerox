@@ -76,13 +76,39 @@
 
     <div class="print-area" id="printArea">
 
-        <img id="previewImage">
-        <canvas
-            id="canvasOutput"
-            style="display:none;">
-        </canvas>
+    <img id="previewImage">
+
+    <canvas id="canvasOutput"></canvas>
+
+    <div id="cropBox">
+
+        <div class="point" id="p1"></div>
+
+        <div class="point" id="p2"></div>
+
+        <div class="point" id="p3"></div>
+
+        <div class="point" id="p4"></div>
 
     </div>
+
+</div>
+
+<div class="crop-buttons">
+
+    <button
+        type="button"
+        id="detectBtn">
+        📄 Detect Document
+    </button>
+
+    <button
+        type="button"
+        id="applyCropBtn">
+        ✂ Apply Crop
+    </button>
+
+</div>
 
 
 

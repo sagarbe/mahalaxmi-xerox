@@ -34,27 +34,44 @@ async function startScanner(file) {
 
                     let src = cv.imread(canvas);
 
-                    // Gray
-                    let gray = new cv.Mat();
-                    cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
+                    // Brightness + Contrast
+let enhanced = new cv.Mat();
 
-                    // Blur
-                    let blur = new cv.Mat();
-                    cv.GaussianBlur(gray, blur, new cv.Size(3,3), 0);
+cv.convertScaleAbs(
+    src,
+    enhanced,
+    1.35,   // Contrast
+    25      // Brightness
+);
 
-                    // Adaptive Threshold
-                    let scan = new cv.Mat();
-                    cv.adaptiveThreshold(
-                        blur,
-                        scan,
-                        255,
-                        cv.ADAPTIVE_THRESH_GAUSSIAN_C,
-                        cv.THRESH_BINARY,
-                        21,
-                        15
-                    );
+// Sharpen
+let kernel = cv.matFromArray(
+    3,
+    3,
+    cv.CV_32F,
+    [
+        0,-1,0,
+       -1,5,-1,
+        0,-1,0
+    ]
+);
 
-                    cv.cvtColor(scan, src, cv.COLOR_GRAY2RGBA);
+cv.filter2D(
+    enhanced,
+    enhanced,
+    -1,
+    kernel
+);
+
+cv.imshow(canvas, enhanced);
+
+const result = canvas.toDataURL("image/jpeg", 0.98);
+
+kernel.delete();
+enhanced.delete();
+src.delete();
+
+resolve(result);
 
                     cv.imshow(canvas, src);
 
