@@ -536,7 +536,7 @@ height
 );
 
 
-
+console.log("Crop Canvas Size:", canvas.width, canvas.height);
 canvas.toBlob((blob)=>{
 
 
