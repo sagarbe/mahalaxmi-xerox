@@ -55,6 +55,8 @@ async function loadPrices(){
 
 
 
+
+
 // ================= SERVICE CHANGE =================
 
 serviceSelect.addEventListener("change",()=>{
@@ -95,6 +97,9 @@ serviceSelect.addEventListener("change",()=>{
 
 
 
+
+
+
 // ================= FILE SELECT =================
 
 printFileInput.addEventListener("change",()=>{
@@ -111,6 +116,9 @@ printFileInput.addEventListener("change",()=>{
 
 
         previewImage.src="";
+
+
+        printArea.style.display="none";
 
 
         return;
@@ -136,6 +144,8 @@ printFileInput.addEventListener("change",()=>{
 
             previewImage.src = e.target.result;
 
+            printArea.style.display="block";
+
 
         };
 
@@ -150,6 +160,8 @@ printFileInput.addEventListener("change",()=>{
 
         previewImage.src="";
 
+        printArea.style.display="none";
+
 
     }
 
@@ -159,6 +171,10 @@ printFileInput.addEventListener("change",()=>{
 
 
 });
+
+
+
+
 
 
 
@@ -187,8 +203,10 @@ function calculate(){
 
 
 
+
     const copies =
     parseInt(copiesInput.value) || 1;
+
 
 
 
@@ -203,7 +221,11 @@ function calculate(){
     "₹"+total;
 
 
+
 }
+
+
+
 
 
 
@@ -229,6 +251,8 @@ printRadios.forEach(radio=>{
 
 
 
+
+
 // ================= COPIES =================
 
 
@@ -236,6 +260,8 @@ copiesInput.addEventListener(
     "input",
     calculate
 );
+
+
 
 
 
@@ -269,10 +295,12 @@ await file.arrayBuffer();
 
 
 
+
 const pdf =
 await pdfjsLib.getDocument({
 data:buffer
 }).promise;
+
 
 
 
@@ -313,6 +341,8 @@ calculate();
 
 
 });
+
+
 
 
 
@@ -366,6 +396,9 @@ calculate();
 )
 
 .subscribe();
+
+
+
 
 
 

@@ -8,8 +8,6 @@ const paymentRadios = document.getElementsByName("payment");
 
 const upiBox = document.getElementById("upiBox");
 
-let detectedPages = 1;
-
 
 
 
@@ -72,15 +70,19 @@ orderButton.addEventListener("click",async()=>{
 
 
 
-    // ORIGINAL FILE ONLY
 
-    let uploadFile = selectedFile;
+
+    // ORIGINAL FILE UPLOAD
+
+    const uploadFile = selectedFile;
+
 
 
     console.log(
-        "FINAL UPLOAD FILE",
+        "UPLOAD FILE",
         uploadFile
     );
+
 
 
 
@@ -108,11 +110,9 @@ orderButton.addEventListener("click",async()=>{
 
 
 
-    // ================= UPLOAD =================
 
 
-    console.log("UPLOAD START");
-
+    // ================= STORAGE UPLOAD =================
 
 
     const {error:uploadError}=
@@ -144,6 +144,7 @@ orderButton.addEventListener("click",async()=>{
 
 
 
+
     if(uploadError){
 
 
@@ -157,6 +158,8 @@ orderButton.addEventListener("click",async()=>{
 
 
     }
+
+
 
 
 
@@ -188,6 +191,8 @@ orderButton.addEventListener("click",async()=>{
 
 
 
+
+
     // ================= PRINT TYPE =================
 
 
@@ -202,6 +207,8 @@ orderButton.addEventListener("click",async()=>{
 
 
     }
+
+
 
 
 
@@ -236,6 +243,10 @@ orderButton.addEventListener("click",async()=>{
 
 
 
+
+
+
+
     const {error:orderError}=
 
 
@@ -254,29 +265,36 @@ orderButton.addEventListener("click",async()=>{
         file_url:fileURL,
 
 
-        service:document.getElementById("service").value,
+        service:
+        document.getElementById("service").value,
+
 
 
         print_type:printType,
 
 
+
         copies:copies,
+
 
 
         page_count:pageCount,
 
 
+
         amount:amount,
 
 
-        payment:document.querySelector(
 
+        payment:
+        document.querySelector(
             'input[name="payment"]:checked'
-
         ).value,
 
 
+
         status:"New",
+
 
 
         print_status:"Pending"
@@ -284,6 +302,7 @@ orderButton.addEventListener("click",async()=>{
 
 
     }]);
+
 
 
 
@@ -312,7 +331,6 @@ orderButton.addEventListener("click",async()=>{
 
 
     alert("✅ Order Placed Successfully");
-
 
 
     location.reload();
