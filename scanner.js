@@ -1,6 +1,28 @@
-// ================= WAIT =================
+function waitForOpenCV() {
+
+    return new Promise(resolve => {
+
+        let timer = setInterval(() => {
+
+            if (window.cv && cv.imread) {
+
+                clearInterval(timer);
+
+                resolve();
+
+            }
+
+        },100);
+
+    });
+
+}
+
+
 
 async function startScanner(file){
+
+    await waitForOpenCV();
 
     return new Promise((resolve,reject)=>{
 
@@ -14,32 +36,43 @@ async function startScanner(file){
 
                 try{
 
-                    const scanner=new jscanify();
-
                     const canvas=document.createElement("canvas");
 
                     canvas.width=img.width;
+
                     canvas.height=img.height;
 
                     const ctx=canvas.getContext("2d");
 
                     ctx.drawImage(img,0,0);
 
-                    // Auto Detect + Crop
-                    const result=scanner.extractPaper(
-                        canvas,
-                        canvas.width,
-                        canvas.height
+                    let src=cv.imread(canvas);
+
+                    let dst=new cv.Mat();
+
+                    cv.convertScaleAbs(
+                        src,
+                        dst,
+                        1.2,
+                        15
                     );
 
-                    resolve(
-                        result.toDataURL(
-                            "image/jpeg",
-                            0.95
-                        )
+                    cv.imshow(canvas,dst);
+
+                    const result=
+                    canvas.toDataURL(
+                        "image/jpeg",
+                        0.95
                     );
+
+                    src.delete();
+
+                    dst.delete();
+
+                    resolve(result);
 
                 }
+
                 catch(err){
 
                     console.log(err);
