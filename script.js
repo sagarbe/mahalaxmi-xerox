@@ -341,6 +341,7 @@ if (cropBtn) {
 
     cropBtn.addEventListener("click", () => {
 
+
         if (!cropper) {
 
             alert("Please upload an image first.");
@@ -349,21 +350,64 @@ if (cropBtn) {
 
         }
 
+
         const canvas = cropper.getCroppedCanvas({
 
-            imageSmoothingEnabled: true,
+            imageSmoothingEnabled:true,
 
-            imageSmoothingQuality: "high"
+            imageSmoothingQuality:"high"
 
         });
 
-        previewImage.src = canvas.toDataURL("image/jpeg", 0.95);
 
-        cropper.destroy();
+        canvas.toBlob((blob)=>{
 
-        cropper = null;
 
-        alert("✅ Crop Applied");
+            const originalName = printFileInput.files[0].name;
+
+
+            const croppedFile = new File(
+
+                [blob],
+
+                originalName,
+
+                {
+                    type:"image/jpeg"
+                }
+
+            );
+
+
+            // replace original file
+
+            const dataTransfer = new DataTransfer();
+
+            dataTransfer.items.add(croppedFile);
+
+            printFileInput.files = dataTransfer.files;
+
+
+            // update preview
+
+            previewImage.src =
+            URL.createObjectURL(croppedFile);
+
+
+
+            cropper.destroy();
+
+            cropper=null;
+
+
+            console.log("New Cropped File:", printFileInput.files[0]);
+
+
+            alert("✅ Crop Applied Successfully");
+
+
+        },"image/jpeg",0.95);
+
 
     });
 
