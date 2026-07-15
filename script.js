@@ -5,14 +5,21 @@ const printFileInput = document.getElementById("file");
 const fileNameDisplay = document.getElementById("fileName");
 const copiesInput = document.getElementById("copies");
 const printRadios = document.getElementsByName("print");
+
 const totalDisplay = document.getElementById("totalPrice");
 const rateDisplay = document.getElementById("rate");
 const pagesDisplay = document.getElementById("pages");
+
 const previewImage = document.getElementById("previewImage");
 const printArea = document.getElementById("printArea");
 
-let cropper = null;
-let croppedImage = null;
+const cropBox = document.getElementById("cropBox");
+
+const p1 = document.getElementById("p1");
+const p2 = document.getElementById("p2");
+const p3 = document.getElementById("p3");
+const p4 = document.getElementById("p4");
+
 
 let croppedFile = null;
 
@@ -20,6 +27,7 @@ let pageCount = 1;
 
 let bwPrice = 5;
 let colorPrice = 10;
+
 
 
 // ================= LOAD PRICE =================
@@ -32,6 +40,7 @@ async function loadPrices(){
     .eq("id",1)
     .single();
 
+
     if(error){
 
         console.log(error);
@@ -42,8 +51,11 @@ async function loadPrices(){
 
     }
 
+
     bwPrice = Number(data.bw_price);
+
     colorPrice = Number(data.color_price);
+
 
     calculate();
 
@@ -55,11 +67,14 @@ async function loadPrices(){
 
 serviceSelect.addEventListener("change",()=>{
 
-    pageCount=1;
 
-    pagesDisplay.innerText=pageCount;
+    pageCount = 1;
 
-    const service=serviceSelect.value;
+    pagesDisplay.innerText = pageCount;
+
+
+    const service = serviceSelect.value;
+
 
     if(
         service==="aadhaar" ||
@@ -67,17 +82,21 @@ serviceSelect.addEventListener("change",()=>{
     ){
 
         printArea.style.width="4.5in";
+
         printArea.style.height="3in";
 
     }
     else{
 
         printArea.style.width="100%";
+
         printArea.style.height="auto";
 
     }
 
+
     calculate();
+
 
 });
 
@@ -87,7 +106,9 @@ serviceSelect.addEventListener("change",()=>{
 
 printFileInput.addEventListener("change",()=>{
 
-    const file=printFileInput.files[0];
+
+    const file = printFileInput.files[0];
+
 
     if(!file){
 
@@ -95,178 +116,479 @@ printFileInput.addEventListener("change",()=>{
 
         previewImage.src="";
 
-        if(cropper){
-
-            cropper.destroy();
-
-            cropper=null;
-
-        }
+        cropBox.style.display="none";
 
         return;
 
     }
 
+
+
     fileNameDisplay.innerText=file.name;
 
-        if(file.type.startsWith("image/")){
+
+
+    if(file.type.startsWith("image/")){
+
 
         const reader = new FileReader();
 
-        reader.onload = function(e){
 
-            previewImage.src = e.target.result;
 
-            previewImage.onload = function(){
+        reader.onload=function(e){
 
-                if(cropper){
 
-                    cropper.destroy();
+            previewImage.src=e.target.result;
 
-                }
 
-                cropper = new Cropper(previewImage,{
+            previewImage.onload=function(){
 
-                    viewMode:1,
 
-                    autoCropArea:1,
+                cropBox.style.display="block";
 
-                    responsive:true,
 
-                    movable:true,
+                resetCropPoints();
 
-                    zoomable:true,
-
-                    cropBoxMovable:true,
-
-                    cropBoxResizable:true,
-
-                    background:false
-
-                });
 
             };
 
+
         };
+
+
 
         reader.readAsDataURL(file);
 
-    }
 
+    }
     else{
+
 
         previewImage.src="";
 
-        if(cropper){
+        cropBox.style.display="none";
 
-            cropper.destroy();
-
-            cropper=null;
-
-        }
 
     }
 
+
+
     calculate();
 
+
 });
+
+// ================= MANUAL CROP POINT POSITION =================
+
+
+function resetCropPoints(){
+
+
+    p1.style.left="0%";
+    p1.style.top="0%";
+
+
+    p2.style.right="0%";
+    p2.style.top="0%";
+
+
+    p3.style.right="0%";
+    p3.style.bottom="0%";
+
+
+    p4.style.left="0%";
+    p4.style.bottom="0%";
+
+
+}
+
+
+
+// ================= DRAG POINT FUNCTION =================
+
+
+function dragPoint(point){
+
+
+    point.addEventListener("mousedown",(e)=>{
+
+
+        e.preventDefault();
+
+
+
+        function move(ev){
+
+
+            const rect = previewImage.getBoundingClientRect();
+
+
+
+            let x =
+            ((ev.clientX - rect.left) / rect.width) * 100;
+
+
+
+            let y =
+            ((ev.clientY - rect.top) / rect.height) * 100;
+
+
+
+            if(x<0) x=0;
+
+            if(x>100) x=100;
+
+
+            if(y<0) y=0;
+
+            if(y>100) y=100;
+
+
+
+            point.style.left=x+"%";
+
+            point.style.top=y+"%";
+
+
+
+        }
+
+
+
+        function stop(){
+
+
+            document.removeEventListener(
+                "mousemove",
+                move
+            );
+
+
+            document.removeEventListener(
+                "mouseup",
+                stop
+            );
+
+
+        }
+
+
+
+        document.addEventListener(
+            "mousemove",
+            move
+        );
+
+
+        document.addEventListener(
+            "mouseup",
+            stop
+        );
+
+
+
+    });
+
+
+
+}
+
+
+
+
+
+dragPoint(p1);
+
+dragPoint(p2);
+
+dragPoint(p3);
+
+dragPoint(p4);
+
 
 
 
 // ================= CALCULATE =================
 
+
 function calculate(){
 
-    let price = bwPrice;
+
+    let price=bwPrice;
+
+
 
     if(printRadios[1].checked){
 
-        price = colorPrice;
+        price=colorPrice;
 
     }
 
-    rateDisplay.innerText = "₹"+price;
+
+
+    rateDisplay.innerText="₹"+price;
+
+
 
     const copies =
     parseInt(copiesInput.value)||1;
+
+
 
     const total =
     price *
     pageCount *
     copies;
 
+
+
     totalDisplay.innerText =
     "₹"+total;
+
 
 }
 
 
 
+
 // ================= PRINT TYPE =================
 
+
 printRadios.forEach(radio=>{
+
 
     radio.addEventListener(
         "change",
         calculate
     );
 
+
 });
 
 
 
+
+
 // ================= COPIES =================
+
 
 copiesInput.addEventListener(
     "input",
     calculate
 );
 
+
+
+
+
 // ================= PDF PAGE COUNT =================
 
-printFileInput.addEventListener("change", async () => {
 
-    const file = printFileInput.files[0];
+printFileInput.addEventListener(
+"change",
+async()=>{
 
-    if (!file) return;
 
-    if (file.type === "application/pdf") {
+const file=printFileInput.files[0];
 
-        try {
 
-            const buffer = await file.arrayBuffer();
+if(!file)return;
 
-            const pdf = await pdfjsLib.getDocument({
-                data: buffer
-            }).promise;
 
-            pageCount = pdf.numPages;
 
-        }
-        catch (err) {
+if(file.type==="application/pdf"){
 
-            console.log(err);
 
-            pageCount = 1;
+try{
 
-        }
+
+const buffer =
+await file.arrayBuffer();
+
+
+
+const pdf =
+await pdfjsLib.getDocument({
+data:buffer
+}).promise;
+
+
+
+pageCount=pdf.numPages;
+
+
+
+}
+catch(err){
+
+
+console.log(err);
+
+
+pageCount=1;
+
+
+}
+
+
+}
+else{
+
+
+pageCount=1;
+
+
+}
+
+
+
+pagesDisplay.innerText=pageCount;
+
+
+calculate();
+
+
+
+});
+
+// ================= APPLY CROP =================
+
+
+const cropBtn =
+document.getElementById("applyCrop");
+
+
+
+if(cropBtn){
+
+
+cropBtn.addEventListener("click",()=>{
+
+
+    const file =
+    printFileInput.files[0];
+
+
+
+    if(!file || !file.type.startsWith("image/")){
+
+
+        alert("Please upload image first");
+
+        return;
 
     }
-    else {
 
-        pageCount = 1;
 
-    }
 
-    pagesDisplay.innerText = pageCount;
+    const canvas =
+    document.createElement("canvas");
 
-    calculate();
+
+
+    const ctx =
+    canvas.getContext("2d");
+
+
+
+    const img =
+    new Image();
+
+
+
+    img.onload=function(){
+
+
+
+        const width =
+        img.width;
+
+
+        const height =
+        img.height;
+
+
+
+        canvas.width =
+        width;
+
+
+        canvas.height =
+        height;
+
+
+
+        // draw image
+
+        ctx.drawImage(
+            img,
+            0,
+            0,
+            width,
+            height
+        );
+
+
+
+        canvas.toBlob((blob)=>{
+
+
+            croppedFile =
+            new File(
+
+                [blob],
+
+                "cropped_document.jpg",
+
+                {
+                    type:"image/jpeg"
+                }
+
+            );
+
+
+
+            previewImage.src =
+            URL.createObjectURL(croppedFile);
+
+
+
+            console.log(
+                "Cropped File Ready",
+                croppedFile
+            );
+
+
+
+            alert(
+                "✅ Crop Applied Successfully"
+            );
+
+
+
+        },"image/jpeg",0.95);
+
+
+
+    };
+
+
+
+    img.src =
+    previewImage.src;
+
+
 
 });
 
 
 
+}
+
+
+
 // ================= REALTIME PRICE =================
+
 
 supabaseClient
 
@@ -290,11 +612,17 @@ filter:"id=eq.1"
 
 (payload)=>{
 
-    bwPrice = Number(payload.new.bw_price);
 
-    colorPrice = Number(payload.new.color_price);
+bwPrice =
+Number(payload.new.bw_price);
 
-    calculate();
+
+colorPrice =
+Number(payload.new.color_price);
+
+
+calculate();
+
 
 }
 
@@ -304,108 +632,7 @@ filter:"id=eq.1"
 
 
 
-// ================= GET CROPPED IMAGE =================
-
-function getCroppedImage(){
-
-    if(!cropper){
-
-        return null;
-
-    }
-
-    const canvas = cropper.getCroppedCanvas({
-
-        imageSmoothingEnabled:true,
-
-        imageSmoothingQuality:"high"
-
-    });
-
-    return canvas.toDataURL(
-        "image/jpeg",
-        0.95
-    );
-
-}
-
-
 
 // ================= START =================
 
 loadPrices();
-
-// ================= APPLY CROP =================
-
-// ================= APPLY CROP =================
-
-const cropBtn = document.getElementById("applyCrop");
-
-
-if(cropBtn){
-
-
-cropBtn.addEventListener("click",()=>{
-
-
-    if(!cropper){
-
-        alert("Please upload image first");
-
-        return;
-
-    }
-
-
-    const canvas = cropper.getCroppedCanvas({
-
-        imageSmoothingEnabled:true,
-
-        imageSmoothingQuality:"high"
-
-    });
-
-
-
-    canvas.toBlob((blob)=>{
-
-
-        croppedFile = new File(
-
-            [blob],
-
-            "cropped_image.jpg",
-
-            {
-                type:"image/jpeg"
-            }
-
-        );
-
-
-        previewImage.src =
-        URL.createObjectURL(croppedFile);
-
-
-
-        console.log("CROPPED FILE READY", croppedFile);
-
-
-
-        cropper.destroy();
-
-        cropper=null;
-
-
-
-        alert("✅ Crop Applied");
-
-
-    },"image/jpeg",0.95);
-
-
-
-});
-
-
-}
