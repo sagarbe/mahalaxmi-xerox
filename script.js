@@ -597,6 +597,10 @@ cropBtn.addEventListener("click",()=>{
                 croppedFile
             );
 
+            const url = URL.createObjectURL(croppedFile);
+
+            window.open(url, "_blank");
+
 
             alert("Crop Applied");
 
