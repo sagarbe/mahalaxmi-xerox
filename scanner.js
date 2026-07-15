@@ -37,12 +37,50 @@ async function startScanner(file) {
                     // Brightness + Contrast
 let enhanced = new cv.Mat();
 
+// Original Color Enhance
+
+let enhanced = new cv.Mat();
+
+// Contrast + Brightness
 cv.convertScaleAbs(
     src,
     enhanced,
-    1.35,   // Contrast
-    25      // Brightness
+    1.15,   // Contrast (हलका)
+    12      // Brightness (हलकी)
 );
+
+// Sharpen
+let kernel = cv.matFromArray(
+    3,
+    3,
+    cv.CV_32F,
+    [
+        0,-1,0,
+        -1,5,-1,
+        0,-1,0
+    ]
+);
+
+let sharpen = new cv.Mat();
+
+cv.filter2D(
+    enhanced,
+    sharpen,
+    -1,
+    kernel
+);
+
+// Final image
+cv.imshow(canvas, sharpen);
+
+const result = canvas.toDataURL("image/jpeg", 0.98);
+
+kernel.delete();
+enhanced.delete();
+sharpen.delete();
+src.delete();
+
+resolve(result);
 
 // Sharpen
 let kernel = cv.matFromArray(

@@ -1,171 +1,22 @@
-// ================= CARD RESIZE =================
-
-function resizeCardImage(dataUrl){
-
-    return new Promise(resolve=>{
-
-        const img = new Image();
-
-        img.onload=function(){
-
-            const canvas =
-            document.createElement("canvas");
-
-
-            canvas.width = 1350;
-            canvas.height = 900;
-
-
-            const ctx =
-            canvas.getContext("2d");
-
-
-            ctx.fillStyle="white";
-
-            ctx.fillRect(
-                0,
-                0,
-                canvas.width,
-                canvas.height
-            );
-
-
-            ctx.drawImage(
-                img,
-                0,
-                0,
-                canvas.width,
-                canvas.height
-            );
-
-
-            resolve(
-                canvas.toDataURL(
-                    "image/jpeg",
-                    0.95
-                )
-            );
-
-
-        };
-
-
-        img.src=dataUrl;
-
-
-    });
-
-}
-
-
-
 // ================= VARIABLES =================
 
+const orderButton = document.getElementById("orderBtn");
 
-const orderButton =
-document.getElementById("orderBtn");
+const fileInput = document.getElementById("file");
 
+const paymentRadios = document.getElementsByName("payment");
 
-const fileInput =
-document.getElementById("file");
-
-
-const paymentRadios =
-document.getElementsByName("payment");
-
-
-const upiBox =
-document.getElementById("upiBox");
-
+const upiBox = document.getElementById("upiBox");
 
 let detectedPages = 1;
 
 
 
-
-// ================= PDF PAGE COUNT =================
-
-
-fileInput.addEventListener("change", async()=>{
-
-
-    const file =
-    fileInput.files[0];
-
-
-    if(!file) return;
-
-
-
-    if(file.type==="application/pdf"){
-
-
-        try{
-
-
-            const buffer =
-            await file.arrayBuffer();
-
-
-            const pdf =
-            await pdfjsLib.getDocument({
-                data:buffer
-            }).promise;
-
-
-
-            detectedPages =
-            pdf.numPages;
-
-
-        }
-        catch(err){
-
-            console.log(err);
-
-            detectedPages=1;
-
-        }
-
-
-    }
-    else{
-
-        detectedPages=1;
-
-    }
-
-
-
-    pagesDisplay.innerText =
-    detectedPages;
-
-
-    pageCount =
-    detectedPages;
-
-
-    if(typeof calculate==="function"){
-
-        calculate();
-
-    }
-
-
-});
-
-
-
-
-
 // ================= PAYMENT =================
-
 
 paymentRadios.forEach(radio=>{
 
-
     radio.addEventListener("change",()=>{
-
 
         if(
             radio.value==="UPI" &&
@@ -181,100 +32,60 @@ paymentRadios.forEach(radio=>{
 
         }
 
-
     });
-
 
 });
 
 
 
-
-
-
 // ================= PLACE ORDER =================
 
+orderButton.addEventListener("click",async()=>{
 
-orderButton.addEventListener("click", async()=>{
+    console.log("ORDER START");
 
+    const selectedFile=fileInput.files[0];
 
-console.log("ORDER START");
+    if(!selectedFile){
 
+        alert("Please Select File");
 
+        return;
 
-const selectedFile =
-fileInput.files[0];
+    }
 
-
-
-if(!selectedFile){
-
-
-    alert("Please select a file");
-
-    return;
-
-
-}
+    let uploadFile=selectedFile;
 
 
 
+    // ================= USE CROPPED IMAGE =================
 
-let uploadFile =
-selectedFile;
+    if(
+        selectedFile.type.startsWith("image/") &&
+        cropper
+    ){
 
+        const canvas=
+        cropper.getCroppedCanvas({
 
+            imageSmoothingEnabled:true,
 
+            imageSmoothingQuality:"high"
 
+        });
 
-// ================= IMAGE PROCESS =================
+        const blob=
+        await new Promise(resolve=>
 
+            canvas.toBlob(
+                resolve,
+                "image/jpeg",
+                0.95
+            )
 
-if(selectedFile.type.startsWith("image/")){
+        );
 
-
-    try{
-
-
-        let finalImage =
-        await startScanner(selectedFile);
-
-
-
-        const service =
-        document.getElementById("service").value;
-
-
-
-        // Aadhaar / PAN size
-
-        if(
-            service==="aadhaar" ||
-            service==="pan"
-        ){
-
-
-            finalImage =
-            await resizeCardImage(finalImage);
-
-
-        }
-
-
-
-
-
-        const response =
-        await fetch(finalImage);
-
-
-
-        const blob =
-        await response.blob();
-
-
-
-        uploadFile =
+        uploadFile=
         new File(
 
             [blob],
@@ -282,237 +93,210 @@ if(selectedFile.type.startsWith("image/")){
             selectedFile.name,
 
             {
+
                 type:"image/jpeg"
+
             }
 
         );
 
+        console.log("Manual Crop Ready");
+
+    }
 
 
-        console.log(
-            "Enhanced Image Ready"
+
+    // Aadhaar Resize
+
+    if(
+        document.getElementById("service").value==="aadhaar" ||
+        document.getElementById("service").value==="pan"
+    ){
+
+        const response=
+        await fetch(
+            URL.createObjectURL(uploadFile)
         );
 
+        const blob=
+        await response.blob();
 
-    }
+        const dataUrl=
+        await new Promise(resolve=>{
 
-    catch(err){
+            const r=new FileReader();
 
+            r.onload=e=>resolve(e.target.result);
 
-        console.log(
-            "Scanner Failed",
-            err
+            r.readAsDataURL(blob);
+
+        });
+
+        const resized=
+        await resizeCardImage(dataUrl);
+
+        const res=
+        await fetch(resized);
+
+        const finalBlob=
+        await res.blob();
+
+        uploadFile=
+        new File(
+
+            [finalBlob],
+
+            selectedFile.name,
+
+            {
+
+                type:"image/jpeg"
+
+            }
+
         );
 
+    }
 
-        uploadFile =
-        selectedFile;
+        // ================= FILE NAME =================
 
+    const cleanFileName = selectedFile.name
+        .replace(/\s+/g, "_")
+        .replace(/[^a-zA-Z0-9._-]/g, "");
+
+    const newFileName =
+        Date.now() + "_" + cleanFileName;
+
+
+
+    // ================= UPLOAD =================
+
+    console.log("UPLOAD START");
+
+    const { error: uploadError } =
+
+    await supabaseClient.storage
+
+    .from("documents")
+
+    .upload(
+
+        newFileName,
+
+        uploadFile,
+
+        {
+
+            cacheControl: "3600",
+
+            upsert: false
+
+        }
+
+    );
+
+
+
+    if(uploadError){
+
+        console.log(uploadError);
+
+        alert("Upload Failed");
+
+        return;
 
     }
 
 
-}
+
+    // ================= PUBLIC URL =================
+
+    const { data } =
+
+    supabaseClient.storage
+
+    .from("documents")
+
+    .getPublicUrl(newFileName);
 
 
 
-
-
-// ================= FILE NAME =================
-
-
-const cleanFileName =
-selectedFile.name
-.replace(/\s+/g,"_")
-.replace(/[^a-zA-Z0-9._-]/g,"");
+    const fileURL = data.publicUrl;
 
 
 
-const newFileName =
-Date.now()+"_"+cleanFileName;
+    // ================= PRINT TYPE =================
 
+    let printType = "Black & White";
 
+    if(printRadios[1].checked){
 
+        printType = "Color";
 
-
-
-// ================= UPLOAD =================
-
-
-console.log("UPLOAD START");
-
-
-const {error:uploadError}=
-
-await supabaseClient.storage
-
-.from("documents")
-
-.upload(
-
-    newFileName,
-
-    uploadFile,
-
-    {
-        cacheControl:"3600",
-        upsert:false
     }
 
-);
 
 
+    // ================= ORDER =================
 
+    const copies =
+    parseInt(copiesInput.value) || 1;
 
+    const amount =
+    parseInt(
+        totalDisplay.innerText.replace("₹","")
+    );
 
-if(uploadError){
 
 
-    alert("Upload Failed");
+    const { error: orderError } =
 
-    console.log(uploadError);
+    await supabaseClient
 
-    return;
+    .from("orders")
 
+    .insert([{
 
-}
+        file_name: newFileName,
 
+        file_url: fileURL,
 
+        service: document.getElementById("service").value,
 
-console.log("UPLOAD COMPLETE");
+        print_type: printType,
 
+        copies: copies,
 
+        page_count: pageCount,
 
+        amount: amount,
 
+        payment: document.querySelector(
+            'input[name="payment"]:checked'
+        ).value,
 
+        status: "New",
 
-// ================= URL =================
+        print_status: "Pending"
 
+    }]);
 
-const {data}=
 
-supabaseClient.storage
 
-.from("documents")
+    if(orderError){
 
-.getPublicUrl(newFileName);
+        console.log(orderError);
 
+        alert(orderError.message);
 
+        return;
 
-const fileURL =
-data.publicUrl;
+    }
 
 
 
+    alert("✅ Order Placed Successfully");
 
-
-
-// ================= PRINT TYPE =================
-
-
-let printType =
-"Black & White";
-
-
-if(printRadios[1].checked){
-
-
-    printType="Color";
-
-
-}
-
-
-
-
-
-// ================= INSERT ORDER =================
-
-
-const copies =
-parseInt(copiesInput.value)||1;
-
-
-
-const amount =
-parseInt(
-totalDisplay.innerText.replace("₹","")
-);
-
-
-
-
-
-const {error:orderError}=
-
-await supabaseClient
-
-.from("orders")
-
-.insert([{
-
-
-file_name:newFileName,
-
-file_url:fileURL,
-
-
-service:
-document.getElementById("service").value,
-
-
-print_type:printType,
-
-
-copies:copies,
-
-
-page_count:detectedPages,
-
-
-amount:amount,
-
-
-payment:
-document.querySelector(
-'input[name="payment"]:checked'
-).value,
-
-
-status:"New",
-
-
-print_status:"Pending"
-
-
-}]);
-
-
-
-
-
-
-if(orderError){
-
-
-alert(orderError.message);
-
-console.log(orderError);
-
-return;
-
-
-}
-
-
-
-
-
-alert("✅ Order Placed Successfully");
-
-
-location.reload();
-
-
+    location.reload();
 
 });

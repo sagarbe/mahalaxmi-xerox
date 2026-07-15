@@ -1,59 +1,38 @@
+// ================= VARIABLES =================
+
 const serviceSelect = document.getElementById("service");
-
 const printFileInput = document.getElementById("file");
-
 const fileNameDisplay = document.getElementById("fileName");
-
 const copiesInput = document.getElementById("copies");
-
 const printRadios = document.getElementsByName("print");
-
 const totalDisplay = document.getElementById("totalPrice");
-
 const rateDisplay = document.getElementById("rate");
-
 const pagesDisplay = document.getElementById("pages");
-
 const previewImage = document.getElementById("previewImage");
-
 const printArea = document.getElementById("printArea");
 
-
+let cropper = null;
+let croppedImage = null;
 
 let pageCount = 1;
 
-
 let bwPrice = 5;
-
 let colorPrice = 10;
-
-
-
 
 
 // ================= LOAD PRICE =================
 
-
 async function loadPrices(){
 
-
-    const {data,error} =
-
-    await supabaseClient
-
+    const {data,error} = await supabaseClient
     .from("settings")
-
     .select("*")
-
     .eq("id",1)
-
     .single();
-
-
 
     if(error){
 
-        console.log(error.message);
+        console.log(error);
 
         calculate();
 
@@ -61,249 +40,231 @@ async function loadPrices(){
 
     }
 
-
-
     bwPrice = Number(data.bw_price);
-
     colorPrice = Number(data.color_price);
 
-
-
     calculate();
-
 
 }
 
 
 
-
-
-
 // ================= SERVICE CHANGE =================
-
 
 serviceSelect.addEventListener("change",()=>{
 
+    pageCount=1;
 
-    const service =
-    serviceSelect.value;
+    pagesDisplay.innerText=pageCount;
 
-
-
-    pageCount = 1;
-
-
-    pagesDisplay.innerText =
-    pageCount;
-
-
-
-    // Aadhaar / PAN size
+    const service=serviceSelect.value;
 
     if(
         service==="aadhaar" ||
         service==="pan"
     ){
 
-
-        printArea.style.width =
-        "4.5in";
-
-
-        printArea.style.height =
-        "3in";
-
+        printArea.style.width="4.5in";
+        printArea.style.height="3in";
 
     }
     else{
 
-
-        printArea.style.width =
-        "100%";
-
-
-        printArea.style.height =
-        "auto";
-
+        printArea.style.width="100%";
+        printArea.style.height="auto";
 
     }
 
-
-
     calculate();
 
-
-
 });
-
-
-
-
 
 
 
 // ================= FILE SELECT =================
 
-
 printFileInput.addEventListener("change",()=>{
 
+    const file=printFileInput.files[0];
 
-    const file =
-    printFileInput.files[0];
+    if(!file){
 
-
-
-    if(file){
-
-
-        fileNameDisplay.innerText =
-        file.name;
-
-
-
-        if(file.type.startsWith("image/")){
-
-
-            const reader =
-            new FileReader();
-
-
-
-            reader.onload=function(e){
-
-
-                previewImage.src =
-                e.target.result;
-
-
-            };
-
-
-
-            reader.readAsDataURL(file);
-
-
-        }
-
-
-
-    }
-    else{
-
-
-        fileNameDisplay.innerText =
-        "No file selected";
-
+        fileNameDisplay.innerText="No file selected";
 
         previewImage.src="";
 
+        if(cropper){
+
+            cropper.destroy();
+
+            cropper=null;
+
+        }
+
+        return;
 
     }
 
+    fileNameDisplay.innerText=file.name;
 
+        if(file.type.startsWith("image/")){
+
+        const reader = new FileReader();
+
+        reader.onload = function(e){
+
+            previewImage.src = e.target.result;
+
+            previewImage.onload = function(){
+
+                if(cropper){
+
+                    cropper.destroy();
+
+                }
+
+                cropper = new Cropper(previewImage,{
+
+                    viewMode:1,
+
+                    autoCropArea:1,
+
+                    responsive:true,
+
+                    movable:true,
+
+                    zoomable:true,
+
+                    cropBoxMovable:true,
+
+                    cropBoxResizable:true,
+
+                    background:false
+
+                });
+
+            };
+
+        };
+
+        reader.readAsDataURL(file);
+
+    }
+
+    else{
+
+        previewImage.src="";
+
+        if(cropper){
+
+            cropper.destroy();
+
+            cropper=null;
+
+        }
+
+    }
 
     calculate();
-
 
 });
 
 
 
-
-
-
-
-
-
 // ================= CALCULATE =================
-
 
 function calculate(){
 
-
-
     let price = bwPrice;
-
-
 
     if(printRadios[1].checked){
 
-        price=colorPrice;
+        price = colorPrice;
 
     }
 
-
-
-    rateDisplay.innerText =
-    "₹"+price;
-
-
+    rateDisplay.innerText = "₹"+price;
 
     const copies =
     parseInt(copiesInput.value)||1;
-
-
 
     const total =
     price *
     pageCount *
     copies;
 
-
-
     totalDisplay.innerText =
     "₹"+total;
-
-
 
 }
 
 
 
-
-
-
-
-
 // ================= PRINT TYPE =================
 
-
 printRadios.forEach(radio=>{
-
 
     radio.addEventListener(
         "change",
         calculate
     );
 
-
 });
 
 
 
-
-
-
-
-
 // ================= COPIES =================
-
 
 copiesInput.addEventListener(
     "input",
     calculate
 );
 
+// ================= PDF PAGE COUNT =================
 
+printFileInput.addEventListener("change", async () => {
 
+    const file = printFileInput.files[0];
 
+    if (!file) return;
 
+    if (file.type === "application/pdf") {
 
+        try {
+
+            const buffer = await file.arrayBuffer();
+
+            const pdf = await pdfjsLib.getDocument({
+                data: buffer
+            }).promise;
+
+            pageCount = pdf.numPages;
+
+        }
+        catch (err) {
+
+            console.log(err);
+
+            pageCount = 1;
+
+        }
+
+    }
+    else {
+
+        pageCount = 1;
+
+    }
+
+    pagesDisplay.innerText = pageCount;
+
+    calculate();
+
+});
 
 
 
 // ================= REALTIME PRICE =================
-
 
 supabaseClient
 
@@ -327,20 +288,11 @@ filter:"id=eq.1"
 
 (payload)=>{
 
+    bwPrice = Number(payload.new.bw_price);
 
-    bwPrice =
-    Number(payload.new.bw_price);
-
-
-
-    colorPrice =
-    Number(payload.new.color_price);
-
-
+    colorPrice = Number(payload.new.color_price);
 
     calculate();
-
-
 
 }
 
@@ -350,13 +302,33 @@ filter:"id=eq.1"
 
 
 
+// ================= GET CROPPED IMAGE =================
 
+function getCroppedImage(){
 
+    if(!cropper){
 
+        return null;
+
+    }
+
+    const canvas = cropper.getCroppedCanvas({
+
+        imageSmoothingEnabled:true,
+
+        imageSmoothingQuality:"high"
+
+    });
+
+    return canvas.toDataURL(
+        "image/jpeg",
+        0.95
+    );
+
+}
 
 
 
 // ================= START =================
-
 
 loadPrices();
