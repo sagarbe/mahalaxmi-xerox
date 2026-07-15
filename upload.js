@@ -66,106 +66,15 @@ orderButton.addEventListener("click",async()=>{
 
 
 
-    // ================= USE CROPPED IMAGE =================
+    // ================= USE MANUAL CROPPED IMAGE =================
 
-    if(
-        selectedFile.type.startsWith("image/") &&
-        cropper
-    ){
+if(croppedFile){
 
-        const canvas=
-        cropper.getCroppedCanvas({
+    uploadFile = croppedFile;
 
-            imageSmoothingEnabled:true,
+    console.log("Using Cropped File");
 
-            imageSmoothingQuality:"high"
-
-        });
-
-        const blob=
-        await new Promise(resolve=>
-
-            canvas.toBlob(
-                resolve,
-                "image/jpeg",
-                0.95
-            )
-
-        );
-
-        uploadFile=
-        new File(
-
-            [blob],
-
-            selectedFile.name,
-
-            {
-
-                type:"image/jpeg"
-
-            }
-
-        );
-
-        console.log("Manual Crop Ready");
-
-    }
-
-
-
-    // Aadhaar Resize
-
-    if(
-        document.getElementById("service").value==="aadhaar" ||
-        document.getElementById("service").value==="pan"
-    ){
-
-        const response=
-        await fetch(
-            URL.createObjectURL(uploadFile)
-        );
-
-        const blob=
-        await response.blob();
-
-        const dataUrl=
-        await new Promise(resolve=>{
-
-            const r=new FileReader();
-
-            r.onload=e=>resolve(e.target.result);
-
-            r.readAsDataURL(blob);
-
-        });
-
-        const resized=
-        await resizeCardImage(dataUrl);
-
-        const res=
-        await fetch(resized);
-
-        const finalBlob=
-        await res.blob();
-
-        uploadFile=
-        new File(
-
-            [finalBlob],
-
-            selectedFile.name,
-
-            {
-
-                type:"image/jpeg"
-
-            }
-
-        );
-
-    }
-
+}
         // ================= FILE NAME =================
 
     const cleanFileName = selectedFile.name
