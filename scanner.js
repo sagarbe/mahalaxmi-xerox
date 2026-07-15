@@ -1,79 +1,73 @@
 function waitForOpenCV() {
-
     return new Promise(resolve => {
-
-        let timer = setInterval(() => {
-
+        const timer = setInterval(() => {
             if (window.cv && cv.imread) {
-
                 clearInterval(timer);
-
                 resolve();
-
             }
-
-        },100);
-
+        }, 100);
     });
-
 }
 
-
-
-async function startScanner(file){
+async function startScanner(file) {
 
     await waitForOpenCV();
 
-    return new Promise((resolve,reject)=>{
+    return new Promise((resolve) => {
 
-        const reader=new FileReader();
+        const reader = new FileReader();
 
-        reader.onload=function(e){
+        reader.onload = function(e){
 
-            const img=new Image();
+            const img = new Image();
 
-            img.onload=function(){
+            img.onload = function(){
 
                 try{
 
-                    const canvas=document.createElement("canvas");
+                    const canvas = document.createElement("canvas");
+                    canvas.width = img.width;
+                    canvas.height = img.height;
 
-                    canvas.width=img.width;
-
-                    canvas.height=img.height;
-
-                    const ctx=canvas.getContext("2d");
-
+                    const ctx = canvas.getContext("2d");
                     ctx.drawImage(img,0,0);
 
-                    let src=cv.imread(canvas);
+                    let src = cv.imread(canvas);
 
-                    let dst=new cv.Mat();
+                    // Gray
+                    let gray = new cv.Mat();
+                    cv.cvtColor(src, gray, cv.COLOR_RGBA2GRAY);
 
-                    cv.convertScaleAbs(
-                        src,
-                        dst,
-                        1.2,
+                    // Blur
+                    let blur = new cv.Mat();
+                    cv.GaussianBlur(gray, blur, new cv.Size(3,3), 0);
+
+                    // Adaptive Threshold
+                    let scan = new cv.Mat();
+                    cv.adaptiveThreshold(
+                        blur,
+                        scan,
+                        255,
+                        cv.ADAPTIVE_THRESH_GAUSSIAN_C,
+                        cv.THRESH_BINARY,
+                        21,
                         15
                     );
 
-                    cv.imshow(canvas,dst);
+                    cv.cvtColor(scan, src, cv.COLOR_GRAY2RGBA);
 
-                    const result=
-                    canvas.toDataURL(
-                        "image/jpeg",
-                        0.95
-                    );
+                    cv.imshow(canvas, src);
+
+                    const result = canvas.toDataURL("image/jpeg",0.98);
 
                     src.delete();
-
-                    dst.delete();
+                    gray.delete();
+                    blur.delete();
+                    scan.delete();
 
                     resolve(result);
 
-                }
-
-                catch(err){
+                }catch(err){
 
                     console.log(err);
 
@@ -83,7 +77,7 @@ async function startScanner(file){
 
             };
 
-            img.src=e.target.result;
+            img.src = e.target.result;
 
         };
 
