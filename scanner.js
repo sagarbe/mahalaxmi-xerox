@@ -2,29 +2,40 @@
 
 function waitForOpenCV(){
 
-    return new Promise(resolve=>{
+    return new Promise((resolve,reject)=>{
+
+        let count = 0;
+
+        const timer = setInterval(()=>{
 
 
-        if(window.cv && cv.Mat){
+            if(window.cv && cv.Mat){
 
-            resolve();
+                clearInterval(timer);
 
-        }
-        else{
+                resolve();
 
-            setTimeout(
-                ()=>waitForOpenCV().then(resolve),
-                100
-            );
+            }
 
-        }
+
+            count++;
+
+
+            if(count > 100){
+
+                clearInterval(timer);
+
+                reject("OpenCV Load Failed");
+
+            }
+
+
+        },100);
 
 
     });
 
 }
-
-
 
 
 
@@ -41,94 +52,60 @@ async function startScanner(file){
     return new Promise((resolve,reject)=>{
 
 
-        const reader =
-        new FileReader();
+        const reader = new FileReader();
 
 
 
+        reader.onload = function(e){
 
-        reader.onload=function(e){
 
-
-            const img =
-            new Image();
+            const img = new Image();
 
 
 
-            img.onload=function(){
+            img.onload = function(){
 
 
                 try{
 
 
-                    let src =
-                    cv.imread(img);
+                    let src = cv.imread(img);
 
 
 
-                    let gray =
-                    new cv.Mat();
+                    let gray = new cv.Mat();
 
 
 
                     cv.cvtColor(
-
                         src,
-
                         gray,
-
                         cv.COLOR_RGBA2GRAY
-
                     );
 
 
-
-
-
-                    // Blur
 
                     cv.GaussianBlur(
-
                         gray,
-
                         gray,
-
                         new cv.Size(5,5),
-
                         0
-
                     );
 
 
 
-
-
-
-                    // Edge
-
-                    let edges =
-                    new cv.Mat();
+                    let edges = new cv.Mat();
 
 
 
                     cv.Canny(
-
                         gray,
-
                         edges,
-
                         75,
-
                         200
-
                     );
 
 
-
-
-
-
-                    // Contours
 
                     let contours =
                     new cv.MatVector();
@@ -156,16 +133,9 @@ async function startScanner(file){
 
 
 
-
-
-
-
                     let maxArea = 0;
 
                     let bestRect = null;
-
-
-
 
 
 
@@ -174,7 +144,6 @@ async function startScanner(file){
                         i<contours.size();
                         i++
                     ){
-
 
 
                         let cnt =
@@ -187,28 +156,21 @@ async function startScanner(file){
 
 
 
-
-                        if(area > maxArea){
-
-
-                            let rect =
-                            cv.boundingRect(cnt);
+                        let rect =
+                        cv.boundingRect(cnt);
 
 
 
-                            if(
-                                rect.width > 100 &&
-                                rect.height > 100
-                            ){
+                        if(
+                            area > maxArea &&
+                            rect.width > 150 &&
+                            rect.height > 150
+                        ){
 
 
-                                maxArea = area;
+                            maxArea = area;
 
-
-                                bestRect = rect;
-
-
-                            }
+                            bestRect = rect;
 
 
                         }
@@ -218,16 +180,9 @@ async function startScanner(file){
 
 
 
-
-
-
-
-
                     let output;
 
 
-
-                    // Crop document
 
                     if(bestRect){
 
@@ -250,12 +205,22 @@ async function startScanner(file){
                         );
 
 
+                        console.log(
+                            "Document Cropped"
+                        );
+
+
                     }
                     else{
 
 
                         output =
-                        src;
+                        src.clone();
+
+
+                        console.log(
+                            "No Crop Found"
+                        );
 
 
                     }
@@ -263,11 +228,7 @@ async function startScanner(file){
 
 
 
-
-
-
-                    // Enhance brightness contrast
-
+                    // Enhance
 
                     cv.convertScaleAbs(
 
@@ -275,7 +236,7 @@ async function startScanner(file){
 
                         output,
 
-                        1.3,
+                        1.25,
 
                         15
 
@@ -284,41 +245,23 @@ async function startScanner(file){
 
 
 
-
-
-
-                    const canvas =
+                    let canvas =
                     document.createElement("canvas");
 
 
 
-
                     cv.imshow(
-
                         canvas,
-
                         output
-
                     );
 
 
 
-
-
-
-
-                    const result =
+                    let result =
                     canvas.toDataURL(
-
                         "image/jpeg",
-
                         0.95
-
                     );
-
-
-
-
 
 
 
@@ -327,8 +270,7 @@ async function startScanner(file){
 
 
 
-
-
+                    // cleanup
 
                     src.delete();
 
@@ -349,15 +291,29 @@ async function startScanner(file){
                 catch(err){
 
 
+                    console.log(
+                        "Scanner Error",
+                        err
+                    );
+
+
                     reject(err);
 
 
                 }
 
 
-
             };
 
+
+
+            img.onerror=function(){
+
+                reject(
+                    "Image Load Failed"
+                );
+
+            };
 
 
 
@@ -370,13 +326,21 @@ async function startScanner(file){
 
 
 
+        reader.onerror=function(){
+
+            reject(
+                "File Read Failed"
+            );
+
+        };
+
+
 
         reader.readAsDataURL(file);
 
 
 
     });
-
 
 
 }
