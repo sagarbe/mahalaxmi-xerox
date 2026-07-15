@@ -1,33 +1,52 @@
 const serviceSelect = document.getElementById("service");
+
 const printFileInput = document.getElementById("file");
+
 const fileNameDisplay = document.getElementById("fileName");
 
 const copiesInput = document.getElementById("copies");
+
 const printRadios = document.getElementsByName("print");
 
 const totalDisplay = document.getElementById("totalPrice");
+
 const rateDisplay = document.getElementById("rate");
+
 const pagesDisplay = document.getElementById("pages");
 
 const previewImage = document.getElementById("previewImage");
 
+const printArea = document.getElementById("printArea");
+
+
 
 let pageCount = 1;
 
+
 let bwPrice = 5;
+
 let colorPrice = 10;
+
+
+
 
 
 // ================= LOAD PRICE =================
 
-async function loadPrices() {
+
+async function loadPrices(){
 
 
-    const { data, error } =
+    const {data,error} =
+
     await supabaseClient
+
     .from("settings")
+
     .select("*")
+
     .eq("id",1)
+
     .single();
 
 
@@ -50,94 +69,122 @@ async function loadPrices() {
 
 
 
-    console.log("B/W Price:", bwPrice);
-
-    console.log("Color Price:", colorPrice);
-
-
-
     calculate();
 
 
 }
 
+
+
+
+
+
 // ================= SERVICE CHANGE =================
+
 
 serviceSelect.addEventListener("change",()=>{
 
 
-    const service = serviceSelect.value;
+    const service =
+    serviceSelect.value;
 
 
-    if(service === "aadhaar"){
 
-        console.log("Aadhaar Print Selected");
+    pageCount = 1;
 
-        pageCount = 1;
+
+    pagesDisplay.innerText =
+    pageCount;
+
+
+
+    // Aadhaar / PAN size
+
+    if(
+        service==="aadhaar" ||
+        service==="pan"
+    ){
+
+
+        printArea.style.width =
+        "4.5in";
+
+
+        printArea.style.height =
+        "3in";
+
 
     }
-
-
-    else if(service === "pan"){
-
-        console.log("PAN Card Print Selected");
-
-        pageCount = 1;
-
-    }
-
-
     else{
 
-        pageCount = 1;
+
+        printArea.style.width =
+        "100%";
+
+
+        printArea.style.height =
+        "auto";
+
 
     }
 
 
-    pagesDisplay.innerText = pageCount;
 
     calculate();
+
 
 
 });
 
 
+
+
+
+
+
 // ================= FILE SELECT =================
 
-printFileInput.addEventListener("change", () => {
+
+printFileInput.addEventListener("change",()=>{
 
 
-    const file = printFileInput.files[0];
+    const file =
+    printFileInput.files[0];
+
 
 
     if(file){
 
 
-        fileNameDisplay.innerText = file.name;
+        fileNameDisplay.innerText =
+        file.name;
 
 
-
-        // Aadhaar / PAN Image Preview
 
         if(file.type.startsWith("image/")){
 
 
-            const reader = new FileReader();
+            const reader =
+            new FileReader();
 
 
-            reader.onload = function(e){
+
+            reader.onload=function(e){
 
 
-                previewImage.src = e.target.result;
+                previewImage.src =
+                e.target.result;
 
 
             };
+
 
 
             reader.readAsDataURL(file);
 
 
         }
+
 
 
     }
@@ -148,14 +195,11 @@ printFileInput.addEventListener("change", () => {
         "No file selected";
 
 
-        previewImage.src = "";
+        previewImage.src="";
 
 
     }
 
-
-
-    pagesDisplay.innerText = pageCount;
 
 
     calculate();
@@ -166,9 +210,16 @@ printFileInput.addEventListener("change", () => {
 
 
 
+
+
+
+
+
 // ================= CALCULATE =================
 
+
 function calculate(){
+
 
 
     let price = bwPrice;
@@ -177,29 +228,32 @@ function calculate(){
 
     if(printRadios[1].checked){
 
-        price = colorPrice;
+        price=colorPrice;
 
     }
 
 
 
     rateDisplay.innerText =
-    "₹" + price;
+    "₹"+price;
 
 
 
     const copies =
-    parseInt(copiesInput.value) || 1;
+    parseInt(copiesInput.value)||1;
 
 
 
     const total =
-    price * pageCount * copies;
+    price *
+    pageCount *
+    copies;
 
 
 
     totalDisplay.innerText =
-    "₹" + total;
+    "₹"+total;
+
 
 
 }
@@ -207,9 +261,14 @@ function calculate(){
 
 
 
+
+
+
+
 // ================= PRINT TYPE =================
 
-printRadios.forEach(radio => {
+
+printRadios.forEach(radio=>{
 
 
     radio.addEventListener(
@@ -223,7 +282,12 @@ printRadios.forEach(radio => {
 
 
 
+
+
+
+
 // ================= COPIES =================
+
 
 copiesInput.addEventListener(
     "input",
@@ -233,47 +297,66 @@ copiesInput.addEventListener(
 
 
 
-// ================= REALTIME PRICE UPDATE =================
+
+
+
+
+
+// ================= REALTIME PRICE =================
+
 
 supabaseClient
+
 .channel("price-update")
+
 .on(
-    "postgres_changes",
-    {
-        event:"UPDATE",
-        schema:"public",
-        table:"settings",
-        filter:"id=eq.1"
-    },
-    (payload)=>{
+
+"postgres_changes",
+
+{
+
+event:"UPDATE",
+
+schema:"public",
+
+table:"settings",
+
+filter:"id=eq.1"
+
+},
+
+(payload)=>{
 
 
-        console.log(
-            "LIVE PRICE UPDATE:",
-            payload.new
-        );
-
-
-        bwPrice =
-        Number(payload.new.bw_price);
-
-
-
-        colorPrice =
-        Number(payload.new.color_price);
+    bwPrice =
+    Number(payload.new.bw_price);
 
 
 
-        calculate();
+    colorPrice =
+    Number(payload.new.color_price);
 
 
-    }
+
+    calculate();
+
+
+
+}
+
 )
+
 .subscribe();
 
 
 
 
+
+
+
+
+
 // ================= START =================
+
 
 loadPrices();

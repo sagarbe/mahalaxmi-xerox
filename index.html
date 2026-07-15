@@ -77,6 +77,10 @@
     <div class="print-area" id="printArea">
 
         <img id="previewImage">
+        <canvas
+            id="canvasOutput"
+            style="display:none;">
+        </canvas>
 
     </div>
 
@@ -227,6 +231,8 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
+<script async src="https://docs.opencv.org/4.x/opencv.js"></script>
+
 
 <script>
 
@@ -235,11 +241,13 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
 
 </script>
 
-
+<script src="https://unpkg.com/jscanify/dist/jscanify.min.js"></script>
 
 <script src="supabase.js"></script>
 
 <script src="script.js"></script>
+
+<script src="scanner.js"></script>
 
 <script src="upload.js"></script>
 

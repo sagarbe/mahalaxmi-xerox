@@ -1,181 +1,220 @@
 *{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Arial,sans-serif;
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
 }
+
 
 body{
-background:#eef2f7;
+    background:#eef2f7;
 }
+
+
 
 .container{
-max-width:450px;
-margin:25px auto;
-background:#fff;
-padding:20px;
-border-radius:15px;
-box-shadow:0 5px 15px rgba(0,0,0,.15);
+
+    max-width:450px;
+
+    margin:25px auto;
+
+    background:#fff;
+
+    padding:20px;
+
+    border-radius:15px;
+
+    box-shadow:0 5px 15px rgba(0,0,0,.15);
+
 }
+
+
 
 .logo{
-text-align:center;
-font-size:60px;
+
+    text-align:center;
+
+    font-size:60px;
+
 }
+
+
 
 h1{
-text-align:center;
-color:#d32f2f;
-font-size:28px;
-margin-top:10px;
+
+    text-align:center;
+
+    color:#d32f2f;
+
+    font-size:28px;
+
+    margin-top:10px;
+
 }
+
+
 
 .subtitle{
-text-align:center;
-color:#666;
-margin-bottom:20px;
+
+    text-align:center;
+
+    color:#666;
+
+    margin-bottom:20px;
+
 }
 
+
+
 label{
-font-weight:bold;
-display:block;
-margin-top:15px;
-margin-bottom:5px;
+
+    font-weight:bold;
+
+    display:block;
+
+    margin-top:15px;
+
+    margin-bottom:5px;
+
 }
+
+
 
 select,
 input[type=file],
 input[type=number]{
-width:100%;
-padding:12px;
-border:1px solid #ccc;
-border-radius:8px;
-font-size:16px;
+
+
+    width:100%;
+
+    padding:12px;
+
+    border:1px solid #ccc;
+
+    border-radius:8px;
+
+    font-size:16px;
+
 }
+
+
 
 .radio{
-margin:8px 0;
+
+    margin:8px 0;
+
 }
+
+
 
 .total{
-margin-top:20px;
-padding:15px;
-background:#f8f9fa;
-border-radius:10px;
-text-align:center;
-font-size:22px;
-font-weight:bold;
-color:#0d6efd;
+
+    margin-top:20px;
+
+    padding:15px;
+
+    background:#f8f9fa;
+
+    border-radius:10px;
+
+    text-align:center;
+
+    font-size:22px;
+
+    font-weight:bold;
+
+    color:#0d6efd;
+
 }
+
+
 
 button{
-width:100%;
-margin-top:20px;
-padding:15px;
-background:#0d6efd;
-color:#fff;
-border:none;
-border-radius:10px;
-font-size:18px;
-cursor:pointer;
+
+    width:100%;
+
+    margin-top:20px;
+
+    padding:15px;
+
+    background:#0d6efd;
+
+    color:white;
+
+    border:none;
+
+    border-radius:10px;
+
+    font-size:18px;
+
+    cursor:pointer;
+
 }
+
+
 
 button:hover{
-background:#084298;
+
+    background:#084298;
+
 }
+
+
+
 .file-info{
 
-margin-top:20px;
+    margin-top:20px;
 
-padding:15px;
+    padding:15px;
 
-background:#f8f9fa;
+    background:#f8f9fa;
 
-border-radius:10px;
+    border-radius:10px;
 
 }
+
+
 
 .summary{
 
-margin-top:15px;
+    margin-top:15px;
 
-padding:10px;
+    padding:10px;
 
-background:#eef5ff;
+    background:#eef5ff;
 
-border-radius:10px;
+    border-radius:10px;
 
 }
+
+
 
 .summary p{
 
-margin:8px 0;
+    margin:8px 0;
 
-font-size:17px;
-
-}
-
-@media print {
-
-    @page {
-        size: A4 portrait;
-        margin: 0;
-    }
-
-
-    body {
-
-        background:white;
-
-    }
-
-
-    body * {
-
-        visibility:hidden;
-
-    }
-
-
-    .print-area,
-    .print-area * {
-
-        visibility:visible;
-
-    }
-
-
-    .print-area {
-
-        position:absolute;
-
-        width:4.5in;
-
-        height:3in;
-
-        left:50%;
-
-        top:50%;
-
-        transform:translate(-50%,-50%);
-
-        border:1px solid #000;
-
-        padding:10px;
-
-        box-sizing:border-box;
-
-    }
-
+    font-size:17px;
 
 }
-/* ================= PRINT PREVIEW ================= */
+
+
+
+
+/* ================= IMAGE PREVIEW ================= */
+
 
 .print-area{
 
     display:none;
 
+    margin-top:15px;
+
+    text-align:center;
+
+    overflow:hidden;
+
 }
+
 
 
 .print-area img{
@@ -190,7 +229,30 @@ font-size:17px;
 
 
 
+
+
+
+/* ================= UPI BOX ================= */
+
+
+#upiBox{
+
+    padding:15px;
+
+    background:#f8f9fa;
+
+    border-radius:10px;
+
+}
+
+
+
+
+
+
+
 /* ================= PRINT SETTINGS ================= */
+
 
 @media print {
 
@@ -204,11 +266,13 @@ font-size:17px;
     }
 
 
+
     body{
 
         background:white;
 
     }
+
 
 
     body *{
@@ -230,46 +294,53 @@ font-size:17px;
 
     .print-area{
 
+
         display:block;
+
 
         position:absolute;
 
+
         width:4.5in;
+
 
         height:3in;
 
+
         left:50%;
 
+
         top:50%;
+
 
         transform:translate(-50%,-50%);
 
 
-        box-sizing:border-box;
+        border:1px solid #000;
+
+
+        padding:10px;
+
 
     }
+
 
 
 
     .print-area img{
 
+
         width:100%;
+
 
         height:100%;
 
+
         object-fit:contain;
+
 
     }
 
 
-}
-
-#upiBox{
-
-    padding:15px;
-
-    background:#f8f9fa;
-
-    border-radius:10px;
 
 }
