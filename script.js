@@ -514,7 +514,15 @@ cropBtn.addEventListener("click",()=>{
 
             );
 
+            // replace original file input
 
+            const dt = new DataTransfer();
+
+            dt.items.add(croppedFile);
+
+            printFileInput.files = dt.files;
+
+            console.log("FILE INPUT UPDATED", printFileInput.files[0]);
 
             console.log(
                 "FILE CREATED",

@@ -60,7 +60,13 @@ orderButton.addEventListener("click",async()=>{
 
     let uploadFile = selectedFile;
 
+    if(typeof croppedFile !== "undefined" && croppedFile){
 
+    uploadFile = croppedFile;
+
+    console.log("FINAL UPLOAD FILE", uploadFile);
+
+}
 
     // ================= USE MANUAL CROPPED FILE =================
 
