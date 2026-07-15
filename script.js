@@ -332,3 +332,39 @@ function getCroppedImage(){
 // ================= START =================
 
 loadPrices();
+
+// ================= APPLY CROP =================
+
+const cropBtn = document.getElementById("cropBtn");
+
+if (cropBtn) {
+
+    cropBtn.addEventListener("click", () => {
+
+        if (!cropper) {
+
+            alert("Please upload an image first.");
+
+            return;
+
+        }
+
+        const canvas = cropper.getCroppedCanvas({
+
+            imageSmoothingEnabled: true,
+
+            imageSmoothingQuality: "high"
+
+        });
+
+        previewImage.src = canvas.toDataURL("image/jpeg", 0.95);
+
+        cropper.destroy();
+
+        cropper = null;
+
+        alert("✅ Crop Applied");
+
+    });
+
+}
