@@ -41,37 +41,27 @@ function distance(p1,p2){
 
 function sortCorners(points){
 
-
-    let sorted=[];
-
-
-    let sum = points.map(
-        p=>p.x+p.y
-    );
+    points.sort((a,b)=>a.y-b.y);
 
 
-    let diff = points.map(
-        p=>p.y-p.x
-    );
+    let top =
+    points.slice(0,2)
+    .sort((a,b)=>a.x-b.x);
 
 
-    sorted[0] =
-    points[sum.indexOf(Math.min(...sum))];
+    let bottom =
+    points.slice(2,4)
+    .sort((a,b)=>a.x-b.x);
 
 
-    sorted[2] =
-    points[sum.indexOf(Math.max(...sum))];
+    return [
 
+        top[0],      // top left
+        top[1],      // top right
+        bottom[1],   // bottom right
+        bottom[0]    // bottom left
 
-    sorted[1] =
-    points[diff.indexOf(Math.min(...diff))];
-
-
-    sorted[3] =
-    points[diff.indexOf(Math.max(...diff))];
-
-
-    return sorted;
+    ];
 
 }
 
@@ -148,27 +138,17 @@ new cv.Size(5,5),
 
 // Adaptive threshold
 
-let thresh=new cv.Mat();
+// ================= EDGE DETECTION =================
+
+let thresh = new cv.Mat();
 
 
-cv.adaptiveThreshold(
-
-gray,
-
-thresh,
-
-255,
-
-cv.ADAPTIVE_THRESH_GAUSSIAN_C,
-
-cv.THRESH_BINARY,
-
-11,
-
-2
-
+cv.Canny(
+    gray,
+    thresh,
+    50,
+    150
 );
-
 
 
 
