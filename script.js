@@ -4,6 +4,7 @@ const serviceSelect = document.getElementById("service");
 const printFileInput = document.getElementById("file");
 const fileNameDisplay = document.getElementById("fileName");
 const copiesInput = document.getElementById("copies");
+
 const printRadios = document.getElementsByName("print");
 
 const totalDisplay = document.getElementById("totalPrice");
@@ -13,15 +14,6 @@ const pagesDisplay = document.getElementById("pages");
 const previewImage = document.getElementById("previewImage");
 const printArea = document.getElementById("printArea");
 
-const cropBox = document.getElementById("cropBox");
-
-const p1 = document.getElementById("p1");
-const p2 = document.getElementById("p2");
-const p3 = document.getElementById("p3");
-const p4 = document.getElementById("p4");
-
-
-let croppedFile = null;
 
 let pageCount = 1;
 
@@ -102,6 +94,7 @@ serviceSelect.addEventListener("change",()=>{
 
 
 
+
 // ================= FILE SELECT =================
 
 printFileInput.addEventListener("change",()=>{
@@ -112,11 +105,13 @@ printFileInput.addEventListener("change",()=>{
 
     if(!file){
 
-        fileNameDisplay.innerText="No file selected";
+
+        fileNameDisplay.innerText =
+        "No file selected";
+
 
         previewImage.src="";
 
-        cropBox.style.display="none";
 
         return;
 
@@ -124,7 +119,8 @@ printFileInput.addEventListener("change",()=>{
 
 
 
-    fileNameDisplay.innerText=file.name;
+    fileNameDisplay.innerText = file.name;
+
 
 
 
@@ -138,26 +134,14 @@ printFileInput.addEventListener("change",()=>{
         reader.onload=function(e){
 
 
-            previewImage.src=e.target.result;
-
-
-            previewImage.onload=function(){
-
-
-                cropBox.style.display="block";
-
-
-                resetCropPoints();
-
-
-            };
+            previewImage.src = e.target.result;
 
 
         };
 
 
-
         reader.readAsDataURL(file);
+
 
 
     }
@@ -165,8 +149,6 @@ printFileInput.addEventListener("change",()=>{
 
 
         previewImage.src="";
-
-        cropBox.style.display="none";
 
 
     }
@@ -178,160 +160,35 @@ printFileInput.addEventListener("change",()=>{
 
 });
 
-// ================= MANUAL CROP POINT POSITION =================
-
-
-function resetCropPoints(){
-
-
-    p1.style.left="0%";
-    p1.style.top="0%";
-
-
-    p2.style.right="0%";
-    p2.style.top="0%";
-
-
-    p3.style.right="0%";
-    p3.style.bottom="0%";
-
-
-    p4.style.left="0%";
-    p4.style.bottom="0%";
-
-
-}
-
-
-
-// ================= DRAG POINT FUNCTION =================
-
-
-function dragPoint(point){
-
-
-    point.addEventListener("mousedown",(e)=>{
-
-
-        e.preventDefault();
-
-
-
-        function move(ev){
-
-
-            const rect = previewImage.getBoundingClientRect();
-
-
-
-            let x =
-            ((ev.clientX - rect.left) / rect.width) * 100;
-
-
-
-            let y =
-            ((ev.clientY - rect.top) / rect.height) * 100;
-
-
-
-            if(x<0) x=0;
-
-            if(x>100) x=100;
-
-
-            if(y<0) y=0;
-
-            if(y>100) y=100;
-
-
-
-            point.style.left=x+"%";
-
-            point.style.top=y+"%";
-
-
-
-        }
-
-
-
-        function stop(){
-
-
-            document.removeEventListener(
-                "mousemove",
-                move
-            );
-
-
-            document.removeEventListener(
-                "mouseup",
-                stop
-            );
-
-
-        }
-
-
-
-        document.addEventListener(
-            "mousemove",
-            move
-        );
-
-
-        document.addEventListener(
-            "mouseup",
-            stop
-        );
-
-
-
-    });
-
-
-
-}
-
-
-
-
-
-dragPoint(p1);
-
-dragPoint(p2);
-
-dragPoint(p3);
-
-dragPoint(p4);
 
 
 
 
 // ================= CALCULATE =================
 
-
 function calculate(){
 
 
-    let price=bwPrice;
+    let price = bwPrice;
 
 
 
     if(printRadios[1].checked){
 
-        price=colorPrice;
+        price = colorPrice;
 
     }
 
 
 
-    rateDisplay.innerText="₹"+price;
+    rateDisplay.innerText =
+    "₹"+price;
+
 
 
 
     const copies =
-    parseInt(copiesInput.value)||1;
+    parseInt(copiesInput.value) || 1;
 
 
 
@@ -347,6 +204,8 @@ function calculate(){
 
 
 }
+
+
 
 
 
@@ -369,6 +228,7 @@ printRadios.forEach(radio=>{
 
 
 
+
 // ================= COPIES =================
 
 
@@ -376,6 +236,8 @@ copiesInput.addEventListener(
     "input",
     calculate
 );
+
+
 
 
 
@@ -389,10 +251,10 @@ printFileInput.addEventListener(
 async()=>{
 
 
-const file=printFileInput.files[0];
+const file = printFileInput.files[0];
 
 
-if(!file)return;
+if(!file) return;
 
 
 
@@ -414,7 +276,7 @@ data:buffer
 
 
 
-pageCount=pdf.numPages;
+pageCount = pdf.numPages;
 
 
 
@@ -425,24 +287,25 @@ catch(err){
 console.log(err);
 
 
-pageCount=1;
+pageCount = 1;
 
 
 }
+
 
 
 }
 else{
 
 
-pageCount=1;
+pageCount = 1;
 
 
 }
 
 
 
-pagesDisplay.innerText=pageCount;
+pagesDisplay.innerText = pageCount;
 
 
 calculate();
@@ -451,144 +314,11 @@ calculate();
 
 });
 
-// ================= APPLY CROP =================
 
-const cropBtn = document.getElementById("applyCrop");
 
-cropBtn.addEventListener("click",()=>{
 
 
-if(!previewImage.src){
 
-alert("Upload image first");
-
-return;
-
-}
-
-
-const img = new Image();
-
-img.src = previewImage.src;
-
-
-img.onload = ()=>{
-
-
-const imgRect = previewImage.getBoundingClientRect();
-
-const scaleX = img.naturalWidth / imgRect.width;
-const scaleY = img.naturalHeight / imgRect.height;
-
-
-// crop box position
-
-const box = cropBox.getBoundingClientRect();
-
-
-const x =
-(box.left - imgRect.left) * scaleX;
-
-
-const y =
-(box.top - imgRect.top) * scaleY;
-
-
-const width =
-box.width * scaleX;
-
-
-const height =
-box.height * scaleY;
-
-
-
-const canvas =
-document.createElement("canvas");
-
-
-canvas.width = width;
-
-canvas.height = height;
-
-
-const ctx =
-canvas.getContext("2d");
-
-
-
-ctx.drawImage(
-
-img,
-
-x,
-y,
-
-width,
-height,
-
-0,
-0,
-
-width,
-height
-
-);
-
-
-console.log("Crop Canvas Size:", canvas.width, canvas.height);
-canvas.toBlob((blob)=>{
-
-
-croppedFile = new File(
-
-[blob],
-
-"cropped.jpg",
-
-{
-type:"image/jpeg"
-}
-
-);
-
-
-
-const reader = new FileReader();
-
-reader.onload = function(e){
-
-    previewImage.src = e.target.result;
-
-};
-
-reader.readAsDataURL(croppedFile);
-
-
-
-console.log(
-"FINAL CROPPED FILE",
-croppedFile
-);
-
-
-
-alert("✅ Crop Applied Successfully");
-
-
-},
-
-"image/jpeg",
-
-0.95);
-
-
-
-};
-
-
-
-});
 
 // ================= REALTIME PRICE =================
 
@@ -613,6 +343,7 @@ filter:"id=eq.1"
 
 },
 
+
 (payload)=>{
 
 
@@ -620,11 +351,14 @@ bwPrice =
 Number(payload.new.bw_price);
 
 
+
 colorPrice =
 Number(payload.new.color_price);
 
 
+
 calculate();
+
 
 
 }
@@ -632,6 +366,9 @@ calculate();
 )
 
 .subscribe();
+
+
+
 
 
 

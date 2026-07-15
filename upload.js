@@ -11,11 +11,15 @@ const upiBox = document.getElementById("upiBox");
 let detectedPages = 1;
 
 
+
+
 // ================= PAYMENT =================
 
 paymentRadios.forEach(radio=>{
 
+
     radio.addEventListener("change",()=>{
+
 
         if(
             radio.value==="UPI" &&
@@ -31,13 +35,20 @@ paymentRadios.forEach(radio=>{
 
         }
 
+
     });
+
 
 });
 
 
 
+
+
+
+
 // ================= PLACE ORDER =================
+
 
 orderButton.addEventListener("click",async()=>{
 
@@ -45,10 +56,13 @@ orderButton.addEventListener("click",async()=>{
     console.log("ORDER START");
 
 
-    const selectedFile=fileInput.files[0];
+
+    const selectedFile = fileInput.files[0];
+
 
 
     if(!selectedFile){
+
 
         alert("Please Select File");
 
@@ -58,31 +72,18 @@ orderButton.addEventListener("click",async()=>{
 
 
 
+    // ORIGINAL FILE ONLY
+
     let uploadFile = selectedFile;
 
-    if(typeof croppedFile !== "undefined" && croppedFile){
 
-    uploadFile = croppedFile;
-
-    console.log("FINAL UPLOAD FILE", uploadFile);
-
-}
-else{
-
-    console.log("USING ORIGINAL FILE");
-
-}
-
-    // ================= USE MANUAL CROPPED FILE =================
+    console.log(
+        "FINAL UPLOAD FILE",
+        uploadFile
+    );
 
 
-    if(typeof croppedFile !== "undefined" && croppedFile){
 
-        uploadFile = croppedFile;
-
-        console.log("Uploading Cropped File");
-
-    }
 
 
 
@@ -91,15 +92,19 @@ else{
 
     const cleanFileName = selectedFile.name
 
-        .replace(/\s+/g, "_")
+        .replace(/\s+/g,"_")
 
-        .replace(/[^a-zA-Z0-9._-]/g, "");
+        .replace(/[^a-zA-Z0-9._-]/g,"");
 
 
 
     const newFileName =
 
-        Date.now() + "_" + cleanFileName;
+        Date.now()+"_"+cleanFileName;
+
+
+
+
 
 
 
@@ -109,7 +114,8 @@ else{
     console.log("UPLOAD START");
 
 
-    const { error: uploadError } =
+
+    const {error:uploadError}=
 
 
     await supabaseClient.storage
@@ -136,17 +142,24 @@ else{
 
 
 
+
+
     if(uploadError){
 
 
         console.log(uploadError);
 
+
         alert("Upload Failed");
+
 
         return;
 
 
     }
+
+
+
 
 
 
@@ -172,17 +185,27 @@ else{
 
 
 
+
+
+
     // ================= PRINT TYPE =================
 
 
     let printType="Black & White";
 
 
+
     if(printRadios[1].checked){
+
 
         printType="Color";
 
+
     }
+
+
+
+
 
 
 
@@ -197,6 +220,8 @@ else{
 
 
 
+
+
     const amount =
 
     parseInt(
@@ -204,6 +229,8 @@ else{
         totalDisplay.innerText.replace("₹","")
 
     );
+
+
 
 
 
@@ -255,7 +282,10 @@ else{
         print_status:"Pending"
 
 
+
     }]);
+
+
 
 
 
@@ -279,7 +309,10 @@ else{
 
 
 
+
+
     alert("✅ Order Placed Successfully");
+
 
 
     location.reload();

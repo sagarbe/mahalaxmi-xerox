@@ -72,38 +72,14 @@
 
 
 
-    <!-- PRINT PREVIEW AREA -->
+    <!-- PREVIEW AREA -->
 
     <div class="print-area" id="printArea">
 
-    <img id="previewImage">
-
-    <canvas id="canvasOutput"></canvas>
-
-    <div id="cropBox">
-
-        <div class="point" id="p1"></div>
-
-        <div class="point" id="p2"></div>
-
-        <div class="point" id="p3"></div>
-
-        <div class="point" id="p4"></div>
+        <img id="previewImage">
 
     </div>
 
-</div>
-
-<div class="crop-buttons">
-
-
-    <button
-    type="button"
-    id="applyCrop">
-    ✂ Apply Crop
-</button>
-
-</div>
 
 
 
@@ -143,6 +119,8 @@
 
 
 
+
+
     <label><b>Number of Copies</b></label>
 
 
@@ -154,8 +132,9 @@
 
 
 
-    <div class="file-info">
 
+
+    <div class="file-info">
 
         <h3>
             Selected File
@@ -166,8 +145,8 @@
             No file selected
         </p>
 
-
     </div>
+
 
 
 
@@ -193,6 +172,7 @@
 
 
 
+
     <div class="total">
 
 
@@ -204,33 +184,68 @@
 
     </div>
 
+
+
+
+
     <label><b>Payment Method</b></label>
 
-<div class="radio">
-    <label>
-        <input type="radio" name="payment" value="Cash" checked>
-        💵 Cash
-    </label>
-</div>
 
-<div class="radio">
-    <label>
-        <input type="radio" name="payment" value="UPI">
-        📱 UPI
-    </label>
-</div>
 
-<div id="upiBox" style="display:none; text-align:center; margin-top:15px;">
+    <div class="radio">
 
-    <img src="phonepe-qr.jpg"
-         width="220"
-         alt="UPI QR">
+        <label>
 
-    <p style="margin-top:10px;">
-        Scan QR & Complete Payment
-    </p>
+            <input 
+            type="radio" 
+            name="payment" 
+            value="Cash" 
+            checked>
 
-</div>
+            💵 Cash
+
+        </label>
+
+    </div>
+
+
+
+    <div class="radio">
+
+        <label>
+
+            <input 
+            type="radio" 
+            name="payment" 
+            value="UPI">
+
+            📱 UPI
+
+        </label>
+
+    </div>
+
+
+
+
+    <div id="upiBox" 
+    style="display:none; text-align:center; margin-top:15px;">
+
+
+        <img 
+        src="phonepe-qr.jpg"
+        width="220"
+        alt="UPI QR">
+
+
+        <p style="margin-top:10px;">
+            Scan QR & Complete Payment
+        </p>
+
+
+    </div>
+
+
 
 
 
@@ -247,12 +262,18 @@
 
 
 
+
+
+
+<!-- Supabase -->
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 
+<!-- PDF Page Count -->
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
-<script src="https://docs.opencv.org/4.x/opencv.js"></script>
 
 
 <script>
@@ -268,12 +289,10 @@ pdfjsLib.GlobalWorkerOptions.workerSrc =
 
 <script src="supabase.js"></script>
 
-
-
-
 <script src="script.js"></script>
 
 <script src="upload.js"></script>
+
 
 
 </body>
