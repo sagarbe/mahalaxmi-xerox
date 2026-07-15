@@ -453,7 +453,6 @@ calculate();
 
 // ================= APPLY CROP =================
 
-
 // ================= APPLY CROP =================
 
 const cropBtn = document.getElementById("applyCrop");
@@ -462,7 +461,10 @@ const cropBtn = document.getElementById("applyCrop");
 cropBtn.addEventListener("click",()=>{
 
 
-    if(!previewImage.src){
+    const img = document.getElementById("previewImage");
+
+
+    if(!img.src){
 
         alert("Upload image first");
 
@@ -471,30 +473,86 @@ cropBtn.addEventListener("click",()=>{
     }
 
 
-    console.log("APPLY CLICKED");
-
 
     const canvas = document.createElement("canvas");
 
     const ctx = canvas.getContext("2d");
 
 
-    const img = new Image();
+
+    const image = new Image();
 
 
-    img.onload = ()=>{
+
+    image.onload = ()=>{
 
 
-        canvas.width = img.width;
+        const box = document.getElementById("cropBox");
 
-        canvas.height = img.height;
+        const imgRect = img.getBoundingClientRect();
+
+        const boxRect = box.getBoundingClientRect();
+
+
+
+        const x =
+        (boxRect.left - imgRect.left)
+        *
+        image.naturalWidth
+        /
+        imgRect.width;
+
+
+
+        const y =
+        (boxRect.top - imgRect.top)
+        *
+        image.naturalHeight
+        /
+        imgRect.height;
+
+
+
+        const width =
+        boxRect.width
+        *
+        image.naturalWidth
+        /
+        imgRect.width;
+
+
+
+        const height =
+        boxRect.height
+        *
+        image.naturalHeight
+        /
+        imgRect.height;
+
+
+
+        canvas.width = width;
+
+        canvas.height = height;
 
 
 
         ctx.drawImage(
-            img,
+
+            image,
+
+            x,
+            y,
+
+            width,
+            height,
+
             0,
-            0
+            0,
+
+            width,
+            height
+
         );
 
 
@@ -514,24 +572,20 @@ cropBtn.addEventListener("click",()=>{
 
             );
 
-            // replace original file input
 
-            const dt = new DataTransfer();
 
-            dt.items.add(croppedFile);
+            previewImage.src =
+            URL.createObjectURL(croppedFile);
 
-            printFileInput.files = dt.files;
 
-            console.log("FILE INPUT UPDATED", printFileInput.files[0]);
 
             console.log(
-                "FILE CREATED",
+                "CROP DONE",
                 croppedFile
             );
 
 
-            alert("Crop file ready");
-
+            alert("Crop Applied");
 
 
         },"image/jpeg",0.95);
@@ -541,7 +595,7 @@ cropBtn.addEventListener("click",()=>{
     };
 
 
-    img.src = previewImage.src;
+    image.src = img.src;
 
 
 
