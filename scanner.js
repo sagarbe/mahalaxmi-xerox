@@ -287,9 +287,14 @@ sortCorners(pts);
 
 
 
-let width=1200;
+const widthTop = distance(corners[0], corners[1]);
+const widthBottom = distance(corners[3], corners[2]);
 
-let height=1600;
+const heightLeft = distance(corners[0], corners[3]);
+const heightRight = distance(corners[1], corners[2]);
+
+const width = Math.max(widthTop, widthBottom);
+const height = Math.max(heightLeft, heightRight);
 
 
 
