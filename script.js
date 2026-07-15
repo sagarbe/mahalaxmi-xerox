@@ -454,78 +454,47 @@ calculate();
 // ================= APPLY CROP =================
 
 
-const cropBtn =
-document.getElementById("applyCrop");
+// ================= APPLY CROP =================
 
-
-
-if(cropBtn){
+const cropBtn = document.getElementById("applyCrop");
 
 
 cropBtn.addEventListener("click",()=>{
 
 
-    const file =
-    printFileInput.files[0];
+    if(!previewImage.src){
 
-
-
-    if(!file || !file.type.startsWith("image/")){
-
-
-        alert("Please upload image first");
+        alert("Upload image first");
 
         return;
 
     }
 
 
-
-    const canvas =
-    document.createElement("canvas");
+    console.log("APPLY CLICKED");
 
 
+    const canvas = document.createElement("canvas");
 
-    const ctx =
-    canvas.getContext("2d");
-
-
-
-    const img =
-    new Image();
+    const ctx = canvas.getContext("2d");
 
 
-
-    img.onload=function(){
-
+    const img = new Image();
 
 
-        const width =
-        img.width;
+    img.onload = ()=>{
 
 
-        const height =
-        img.height;
+        canvas.width = img.width;
+
+        canvas.height = img.height;
 
 
-
-        canvas.width =
-        width;
-
-
-        canvas.height =
-        height;
-
-
-
-        // draw image
 
         ctx.drawImage(
             img,
             0,
-            0,
-            width,
-            height
+            0
         );
 
 
@@ -533,12 +502,11 @@ cropBtn.addEventListener("click",()=>{
         canvas.toBlob((blob)=>{
 
 
-            croppedFile =
-            new File(
+            croppedFile = new File(
 
                 [blob],
 
-                "cropped_document.jpg",
+                "cropped.jpg",
 
                 {
                     type:"image/jpeg"
@@ -548,21 +516,13 @@ cropBtn.addEventListener("click",()=>{
 
 
 
-            previewImage.src =
-            URL.createObjectURL(croppedFile);
-
-
-
             console.log(
-                "Cropped File Ready",
+                "FILE CREATED",
                 croppedFile
             );
 
 
-
-            alert(
-                "✅ Crop Applied Successfully"
-            );
+            alert("Crop file ready");
 
 
 
@@ -573,18 +533,11 @@ cropBtn.addEventListener("click",()=>{
     };
 
 
-
-    img.src =
-    previewImage.src;
+    img.src = previewImage.src;
 
 
 
 });
-
-
-
-}
-
 
 
 // ================= REALTIME PRICE =================
