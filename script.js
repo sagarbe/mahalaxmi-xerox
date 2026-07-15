@@ -335,7 +335,7 @@ loadPrices();
 
 // ================= APPLY CROP =================
 
-const cropBtn = document.getElementById("cropBtn");
+const cropBtn = document.getElementById("applyCrop");
 
 if (cropBtn) {
 

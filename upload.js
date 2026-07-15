@@ -300,3 +300,44 @@ orderButton.addEventListener("click",async()=>{
     location.reload();
 
 });
+
+// ================= APPLY CROP BUTTON =================
+
+const applyCropBtn = document.getElementById("applyCrop");
+
+if(applyCropBtn){
+
+    applyCropBtn.addEventListener("click",()=>{
+
+        if(!cropper){
+
+            alert("Please select image first");
+
+            return;
+
+        }
+
+
+        const canvas = cropper.getCroppedCanvas({
+
+            imageSmoothingEnabled:true,
+
+            imageSmoothingQuality:"high"
+
+        });
+
+
+       const preview = document.getElementById("previewImage");
+
+        if(preview){
+
+            preview.src = canvas.toDataURL("image/jpeg");
+
+        }
+
+
+        console.log("Crop Applied Successfully");
+
+    });
+
+}
