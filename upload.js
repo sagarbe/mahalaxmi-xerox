@@ -82,7 +82,7 @@ const fileInput = document.getElementById("file");
 
 const paymentRadios = document.getElementsByName("payment");
 
-const printRadios = document.getElementsByName("print");
+
 
 const upiBox = document.getElementById("upiBox");
 
