@@ -453,171 +453,139 @@ calculate();
 
 // ================= APPLY CROP =================
 
-// ================= APPLY CROP =================
-
 const cropBtn = document.getElementById("applyCrop");
-
 
 cropBtn.addEventListener("click",()=>{
 
 
-    const img = document.getElementById("previewImage");
+if(!previewImage.src){
 
+alert("Upload image first");
 
-    if(!img.src){
+return;
 
-        alert("Upload image first");
+}
 
-        return;
 
-    }
+const img = new Image();
 
+img.src = previewImage.src;
 
 
-    const canvas = document.createElement("canvas");
+img.onload = ()=>{
 
-    const ctx = canvas.getContext("2d");
 
+const imgRect = previewImage.getBoundingClientRect();
 
+const scaleX = img.naturalWidth / imgRect.width;
+const scaleY = img.naturalHeight / imgRect.height;
 
-    const image = new Image();
 
+// crop box position
 
+const box = cropBox.getBoundingClientRect();
 
-    image.onload = ()=>{
 
+const x =
+(box.left - imgRect.left) * scaleX;
 
-        const box = document.getElementById("cropBox");
 
-        const imgRect = img.getBoundingClientRect();
+const y =
+(box.top - imgRect.top) * scaleY;
 
-        const boxRect = box.getBoundingClientRect();
 
+const width =
+box.width * scaleX;
 
 
-        const x =
-        (boxRect.left - imgRect.left)
-        *
-        image.naturalWidth
-        /
-        imgRect.width;
+const height =
+box.height * scaleY;
 
 
 
-        const y =
-        (boxRect.top - imgRect.top)
-        *
-        image.naturalHeight
-        /
-        imgRect.height;
+const canvas =
+document.createElement("canvas");
 
 
+canvas.width = width;
 
-        const width =
-        boxRect.width
-        *
-        image.naturalWidth
-        /
-        imgRect.width;
+canvas.height = height;
 
 
+const ctx =
+canvas.getContext("2d");
 
-        const height =
-        boxRect.height
-        *
-        image.naturalHeight
-        /
-        imgRect.height;
 
 
+ctx.drawImage(
 
-        canvas.width = width;
+img,
 
-        canvas.height = height;
+x,
+y,
 
+width,
+height,
 
+0,
+0,
 
-        ctx.drawImage(
+width,
+height
 
-            image,
+);
 
-            x,
-            y,
 
-            width,
-            height,
 
-            0,
-            0,
+canvas.toBlob((blob)=>{
 
-            width,
-            height
 
-        );
+croppedFile = new File(
 
+[blob],
 
+"cropped.jpg",
 
-        canvas.toBlob((blob)=>{
+{
+type:"image/jpeg"
+}
 
+);
 
-            croppedFile = new File(
 
-                [blob],
 
-                "cropped.jpg",
+const url =
+URL.createObjectURL(croppedFile);
 
-                {
-                    type:"image/jpeg"
-                }
 
-            );
 
+previewImage.src=url;
 
 
-            const cropURL = URL.createObjectURL(croppedFile);
 
-            console.log("CROP URL", cropURL);
+console.log(
+"FINAL CROPPED FILE",
+croppedFile
+);
 
-            const newImg = document.createElement("img");
 
-            newImg.src = cropURL;
 
-            newImg.style.width = "100%";
+alert("✅ Crop Applied Successfully");
 
-            newImg.style.display = "block";
 
+},
 
-            previewImage.style.display="none";
+"image/jpeg",
 
-            previewImage.parentElement.appendChild(newImg);
+0.95);
 
 
-            console.log(
-                "CROP DONE",
-                croppedFile
-            );
 
-            const url = URL.createObjectURL(croppedFile);
-
-            window.open(url, "_blank");
-
-
-            alert("Crop Applied");
-
-
-        },"image/jpeg",0.95);
-
-
-
-    };
-
-
-    image.src = img.src;
+};
 
 
 
 });
-
 
 // ================= REALTIME PRICE =================
 
