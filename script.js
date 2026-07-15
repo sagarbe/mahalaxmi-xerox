@@ -574,9 +574,22 @@ cropBtn.addEventListener("click",()=>{
 
 
 
-            previewImage.src =
-            URL.createObjectURL(croppedFile);
+            const cropURL = URL.createObjectURL(croppedFile);
 
+            console.log("CROP URL", cropURL);
+
+            const newImg = document.createElement("img");
+
+            newImg.src = cropURL;
+
+            newImg.style.width = "100%";
+
+            newImg.style.display = "block";
+
+
+            previewImage.style.display="none";
+
+            previewImage.parentElement.appendChild(newImg);
 
 
             console.log(
