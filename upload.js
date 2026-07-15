@@ -67,6 +67,11 @@ orderButton.addEventListener("click",async()=>{
     console.log("FINAL UPLOAD FILE", uploadFile);
 
 }
+else{
+
+    console.log("USING ORIGINAL FILE");
+
+}
 
     // ================= USE MANUAL CROPPED FILE =================
 
