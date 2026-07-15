@@ -554,12 +554,15 @@ type:"image/jpeg"
 
 
 
-const url =
-URL.createObjectURL(croppedFile);
+const reader = new FileReader();
 
+reader.onload = function(e){
 
+    previewImage.src = e.target.result;
 
-previewImage.src=url;
+};
+
+reader.readAsDataURL(croppedFile);
 
 
 
